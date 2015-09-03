@@ -24,7 +24,19 @@
     "gulp-mocha": "~2.1.3",
     "chai": "~3.2.0",
     "mocha": "~2.3.0",
-    "jshint-stylish": "~2.0.1"
+    "jshint-stylish": "~2.0.1",
+    "connect-livereload": "~0.5.3",
+    "gulp-livereload": "~3.8.0",
+    "gulp-embedlr": "~0.5.2",
+    "express": "~4.13.3",
+    "tiny-lr": "~0.1.6",
+    "gulp-browserify": "~0.5.1",
+    "path": "~0.11.14",
+    "commander": "~2.8.1",
+    "gulp-sass": "~2.0.4",
+    "gulp-sourcemaps": "~1.5.2",
+    "gulp-if": "~1.2.5",
+    "browser-sync": "~2.8.2"
   },
   "scripts": {
     "test": "gulp test"

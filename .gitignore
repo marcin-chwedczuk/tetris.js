@@ -5,4 +5,6 @@ node_modules/
 # ignore dist directory
 dist/
 
+# ignore tmp directory
+tmp/
 
