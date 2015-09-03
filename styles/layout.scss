@@ -1,7 +1,72 @@
-$font-stack:    Helvetica, sans-serif;
-$primary-color: black;
+@import "_tetrisColors";
 
 body {
-  font: 100% $font-stack;
-    background-color: $primary-color;
+    margin: 0;
+    padding: 0;
+
+    background: url('../assets/layout_background.gif') repeat;
+    background-size: 256px 256px;
+
+    min-width: 758px;
+}
+
+@font-face {
+    font-family: 'DOS_VGA';
+    src: url('../assets/DOS_VGA.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+#game_title {
+    font-family: 'DOS_VGA';
+    font-size: 128px;
+    color: white;
+
+    text-align: center;
+    letter-spacing: -5px;
+
+    margin: 0;
+    padding-top: 16px;
+    padding-bottom: 32px;
+
+    background: linear-gradient(
+        rgba(0,0,0,0.8),
+        rgba(0,0,0,0.1)
+    );
+
+    span:nth-child(1) {
+        color: $tetrisLime;
+    }
+
+    span:nth-child(2) {
+        color: $tetrisCyan;
+    }
+
+    span:nth-child(3) {
+        color: $tetrisRed;
+    }
+
+    span:nth-child(4) {
+        color: $tetrisOrange;
+    }
+
+    span:nth-child(5) {
+        color: $tetrisBlue;
+    }
+
+    span:nth-child(6) {
+        color: $tetrisMagenta;
+    }
+}
+
+#container {
+    width: 640px;
+    height: 800px;
+
+    padding: 0;
+    margin: 0;
+    border: 1px solid gray;
+
+    display: block;
+    margin: auto;
 }
