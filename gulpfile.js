@@ -168,8 +168,8 @@
         gulp.watch(SOURCE_STYLE_FILES, ['browserSync:sassStyles']);
         gulp.watch(SOURCE_JS_FILES, ['browserSync:build']);
         gulp.watch(TEST_JS_FILES, ['test']);
-        gulp.watch(SOURCE_TEMPLATE_FILES).on('change', browserSync.reload);
-        gulp.watch(SOURCE_ASSET_FILES).on('change', browserSync.reload);
+        gulp.watch(SOURCE_TEMPLATE_FILES, ['browserSync:build']);
+        gulp.watch(SOURCE_ASSET_FILES, ['browserSync:build']);
     });
 
 }());
