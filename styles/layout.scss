@@ -1,9 +1,5 @@
 @import "_tetrisColors";
-
-/* layout size */
-$containerWidth: 800px;
-$borderWidth: 20px;
-$borderColor: #898989;
+@import "_layoutVariables";
 
 body {
     margin: 0;
@@ -64,9 +60,6 @@ body {
     }
 }
 
-$viewportWidth: 640px;
-$viewportHeight: 800px;
-
 #container {
     width: $viewportWidth+$borderWidth*2;
     height: $viewportHeight+$borderWidth*2;
@@ -76,125 +69,5 @@ $viewportHeight: 800px;
 
     display: block;
     margin: auto;
-
-    #viewport {
-        position: relative;
-    }
 }
-
-// 10x20 blocks
-$blockSize: 40px;
-#gameboard {
-    width: 10*$blockSize;
-    height: 20*$blockSize;
-
-    background-color: black;
-    margin: 0;
-}
-
-.border {
-    margin: 0;
-}
-
-$borderBackground: darken($borderColor, 13%);
-
-.border-outer {
-    @extend .border;
-
-    padding: $borderWidth/2;
-    border-style: solid;
-    border-width: $borderWidth/4;
-    border-color: lighten($borderColor, 3%) 
-        darken($borderColor, 35%) 
-        darken($borderColor, 35%)
-        lighten($borderColor, 3%);
-    
-    background-color: $borderBackground;
-}
-
-.border-inner {
-    @extend .border;
-
-    padding: 0;
-    
-    border-style: solid;
-    border-width: $borderWidth/4;
-    border-color: darken($borderColor, 35%) 
-        lighten($borderColor, 3%) 
-        lighten($borderColor, 3%)
-        darken($borderColor, 35%);
-}
-
-$indicatorWidth: 200px;
-
-.indicator {
-    display: block;
-
-    position: absolute;
-    right: 3px;
-
-    width: $indicatorWidth;
-
-    font-family: 'DOS_VGA';
-    font-size: 20px;
-    color: yellow;
-
-    background-color: black;
-
-    padding: 8px;
-
-    span {
-        display: block;
-
-        &.pull-right {
-            float: right;
-        }
-    }
-}
-
-#levelIndicator {
-    @extend .indicator;
-
-    top: 0px;
-}
-
-#pointsIndicator {
-    @extend .indicator;
-
-    top: 78px;
-}
-
-#nextBlock {
-    @extend .indicator;
-
-    top: 157px;
-}
-
-#copyLeft {
-    @extend .indicator;
-
-    bottom: 10px;
-
-    padding: 0;
-    width: 235px;
-    height: 100px;
-
-    color: white;
-
-    background-color: $borderBackground;
-    background-image: url('assets/copyleft.png');
-    background-repeat: no-repeat;
-
-    text-align: center;
-    vertical-align: middle;
-    line-height: 105px;
-    span {
-        margin-right: -68px;
-    }
-
-    &:hover {
-        background-image: url('assets/copyleft.gif');
-    }
-}
-
 

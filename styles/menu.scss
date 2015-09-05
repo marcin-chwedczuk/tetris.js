@@ -1,0 +1,46 @@
+
+$menuColor: yellow;
+
+#menu {
+    color: lighten(desaturate($menuColor, 20%), 30%);
+    font-family: 'DOS_VGA';
+
+    width: 380px;
+    margin: auto;
+
+    .menu-title {
+        font-size: 64pt;
+    }
+
+    ul.menu-options {
+        list-style: none;
+        font-size: 25pt;
+
+        margin: 0;
+        padding: 0 0 0 48px;
+
+        li {
+            &.active {
+                margin-left: -65px;
+                font-size: 40pt;
+                color: $menuColor;
+
+                &::before {
+                    content: "> ";
+                }
+            }
+
+            &.surround-active {
+                font-size: 30pt;
+            }
+        }
+    }
+
+    .menu-help-text {
+        font-size: 18pt;
+        
+        margin-top: 90px;
+        width: 600px;
+        margin-left: -41px;
+    }
+}
