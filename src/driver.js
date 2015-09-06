@@ -3,8 +3,11 @@
 var log = require('./logger.js').log;
 var KeyboardState = require('./keyboardState.js').KeyboardState;
 
-var Menu = require('./menu.js').Menu;
+var MainMenu = require('./mainMenu.js').MainMenu;
 var TopScores = require('./topScores.js').TopScores;
+var Settings = require('./settings.js').Settings;
+
+var gameSettings = require('./gameSettings.js');
 
 function Driver() {
     this._destructors = [];
@@ -18,6 +21,8 @@ function Driver() {
 Driver.prototype.init = function() {
     log.debug('initializing driver...');
 
+    gameSettings.load();
+
     this._containerElement = document.getElementById('container');
     this._initKeyboard(window);
 };
@@ -25,12 +30,16 @@ Driver.prototype.init = function() {
 Driver.prototype.setModule = function(ModuleConstructor) {
     if (typeof(ModuleConstructor) === 'string') {
         switch(ModuleConstructor) {
-        case 'Menu':
-            ModuleConstructor = Menu;
+        case 'MainMenu':
+            ModuleConstructor = MainMenu;
             break;
 
         case 'TopScores':
             ModuleConstructor = TopScores;
+            break;
+
+        case 'Settings':
+            ModuleConstructor = Settings;
             break;
 
         default:

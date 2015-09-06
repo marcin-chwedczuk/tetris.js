@@ -11,7 +11,7 @@ TopScores.prototype.run = function(driver) {
     var ks = driver.keyboardState;
 
     if (ks.isEscapePressed()) {
-        driver.setModule('Menu');
+        driver.setModule('MainMenu');
     }   
 
     ks.clear();
@@ -54,21 +54,7 @@ function TopScoresRepository() {
 }
 
 TopScoresRepository.prototype.getTopScores = function() {
-    var uriJson = cookies.getCookieValue(this._cookieName);
-
-    try {
-        var json = decodeURIComponent(uriJson);
-        var topScores = JSON.parse(json);
-
-        if (!Array.isArray(topScores)) {
-            return [];
-        }
-
-        return topScores;
-    }
-    catch(e) {
-        return [];
-    }
+    return cookies.getCookieValue(this._cookieName, []);
 };
 
 TopScoresRepository.prototype.addTopScore = function(user, score) {
@@ -83,7 +69,7 @@ TopScoresRepository.prototype.addTopScore = function(user, score) {
         }
 
         // older scores are earlier in the list
-        return -(l.date - r.date);
+        return (l.date - r.date);
     });
 
     topScores = topScores.slice(0, 10);
@@ -91,10 +77,7 @@ TopScoresRepository.prototype.addTopScore = function(user, score) {
 };
 
 TopScoresRepository.prototype._saveTopScores = function(newTopScores) {
-    var json = JSON.stringify(newTopScores);
-    var uriJson = encodeURIComponent(json);
-
-    cookies.setCookieValue(this._cookieName, uriJson);
+    cookies.setCookieValue(this._cookieName, newTopScores);
 };
 
 exports.TopScoresRepository = TopScoresRepository;

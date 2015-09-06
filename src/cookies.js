@@ -1,8 +1,30 @@
 'use strict';
 
+var log = require('./logger.js').log;
+
+var serializeObject = function(value) {
+    var valueJson = JSON.stringify(value);
+    var cookieSafeValue = encodeURIComponent(valueJson);
+
+    return cookieSafeValue;
+};
+
+var deserializeObject = function(cookieValue) {
+    try {
+        var json = decodeURIComponent(cookieValue);
+        var object = JSON.parse(json);
+
+        return object;
+    }
+    catch(e) {
+        log.error('cannot deserialize value from cookie: {0}, cookieValue: {1}', e.message, cookieValue);
+        return null;
+    }
+};
+
 var cookies = null;
 
-exports.getCookieValue = function(cookieName) {
+exports.getCookieValue = function(cookieName, defaultValue) {
     if (!cookies) {
         var notParsedCookies = document.cookie.split('; ');
 
@@ -12,16 +34,19 @@ exports.getCookieValue = function(cookieName) {
             var name = notParsedCookies[i].substring(0, splitIndex);
             var value = notParsedCookies[i].substring(splitIndex+1);
 
-            cookies[name] = value;
+            cookies[name] = deserializeObject(value);
         }
     }
 
-    return cookies[cookieName];
+    return cookies[cookieName] || defaultValue;
 };
 
 exports.setCookieValue = function(cookieName, cookieValue) {
-    // max age = 100 years
-    document.cookie = cookieName + '=' + cookieValue + ';max-age=' + 3153.0e5;
+    var HUNDRED_YEARS_IN_SECONDS = 60*60*24*356*100;
+
+    var cookieSafeValue = serializeObject(cookieValue);
+
+    document.cookie = cookieName + '=' + cookieSafeValue + ';max-age=' + HUNDRED_YEARS_IN_SECONDS;
     cookies[cookieName] = cookieValue;
 };
 

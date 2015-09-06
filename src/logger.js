@@ -1,7 +1,17 @@
 'use strict';
 
+var LOG_LEVEL = {
+    DEBUG: 0,
+    ERROR: 1
+};
+
 function Logger() {
     this._isActive = true;
+
+    this._logDebug = console.log.bind(console);
+    this._logError = (console.error ? 
+                      console.error.bind(console) : 
+                      console.log.bind(console));
 }
 
 Logger.prototype.disable = function() {
@@ -12,17 +22,15 @@ Logger.prototype.enable = function() {
     this._isActive = true;
 };
 
-
-// log.debug('{0}x{1} foo bar', 1, 2);
-// 
-Logger.prototype.debug = function() {
-    if (!this._isActive || !arguments.length) {
+Logger.prototype._log = function(level, args) {
+    if (!this._isActive || !args.length) {
         return;
     }
 
-    var format = arguments[0];
-    var args = Array.prototype.slice.call(arguments, 1);
+    var format = args[0];
+    args = Array.prototype.slice.call(args, 1);
 
+    // format a'la .NET format string 'foo: {0} bar: {1}'
     format = format.replace(/\{(\d+)\}/g, function(match, index) {
         var arg = args[index];
         
@@ -34,7 +42,23 @@ Logger.prototype.debug = function() {
         return String(arg);
     });
 
-    console.log(format);
+    switch(level) {
+    case LOG_LEVEL.ERROR:
+        this._logError(format);
+        break;
+
+    default:
+        this._logDebug(format);
+        break;
+    }
+};
+
+Logger.prototype.debug = function() {
+    this._log(LOG_LEVEL.DEBUG, arguments);
+};
+
+Logger.prototype.error = function() {
+    this._log(LOG_LEVEL.ERROR, arguments);
 };
 
 exports.log = new Logger();
