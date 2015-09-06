@@ -36,6 +36,7 @@
     var SOURCE_STYLE_FILES = STYLES_DIR + '/*.scss';
     var SOURCE_TEMPLATE_FILES = SOURCE_DIR + '/*.html';
     var SOURCE_ASSET_FILES = ASSETS_DIR + '/*';
+    var FAVICON_ASSET_FILE = ASSETS_DIR + '/favicon.ico';
 
     var TEST_JS_FILES = TEST_DIR + '/*.js';
 
@@ -86,8 +87,15 @@
     });
 
     gulp.task('htmlAssets', function() {
-        return gulp.src(SOURCE_ASSET_FILES)
+        // assets without favicon
+        return gulp.src([SOURCE_ASSET_FILES, '!' + FAVICON_ASSET_FILE])
             .pipe(gulp.dest(DEST_ASSET_DIR))
+            .on('error', gutil.log);
+    });
+
+    gulp.task('favicon', function() {
+        return gulp.src(FAVICON_ASSET_FILE)
+            .pipe(gulp.dest(DEST_DIR))
             .on('error', gutil.log);
     });
 
@@ -110,7 +118,8 @@
             .pipe(browserSync.stream());
     });
 
-    gulp.task('build', ['jshint', 'browserify', 'sassStyles', 'htmlTemplates', 'htmlAssets'], function() {
+    gulp.task('build', ['jshint', 'browserify', 'sassStyles', 'htmlTemplates', 'htmlAssets', 'favicon'],
+    function() {
         gutil.log('BUILDING IN ' + (release ? 'RELEASE' : 'DEBUG') + ' MODE');
 
         return gulp.src(TMP_DIR + '/' + PROGRAM_NAME + '.bs.js')

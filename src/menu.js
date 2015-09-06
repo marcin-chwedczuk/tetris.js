@@ -2,28 +2,69 @@
 
 function Menu(containerElement) {
     this._presenter = new MenuPresenter(containerElement);
+    this._menuItems = [];
 
-    this._presenter.setMenuItems([
-        'Play',
-        'Top Scores',
-        'Settings',
-        'About',
-        'Exit'
-    ]);
-
+    this._createMenu();
     this._currentIndex = 0;
-    this._presenter.highlightMenuItem(this._currentIndex);
+
+    this._renderHtml();
 }
+
+Menu.prototype._createMenu = function() {
+    this._addMenuItem('Play', function() {
+        alert('play');
+    });
+
+    this._addMenuItem('Top Scores', function(driver) {
+        driver.setModule('TopScores');
+    });
+
+    this._addMenuItem('Settings', function() {
+        alert('settings');
+    });
+
+    this._addMenuItem('About', function() {
+        alert('about');
+    });
+
+    this._addMenuItem('Exit', function() {
+        // window.close() doesn't work in recent browsers
+        // insted of closing game window we redirect user to
+        // homepage
+        window.location = '/';
+    });
+};
+
+Menu.prototype._addMenuItem = function(caption, callback) {
+    this._menuItems.push({
+        caption: caption,
+        callback: callback
+    });
+};
+
+Menu.prototype._renderHtml = function() {
+   this._presenter.setMenuItems(
+        this._menuItems.map(function(item) {
+            return item.caption;
+        })
+   );
+
+    this._presenter.highlightMenuItem(this._currentIndex);
+};
 
 Menu.prototype.run = function(driver) {
     var ks = driver.keyboardState;
     var needsUpdate = true;
 
     if (ks.isUpArrowPressed()) {
-        this._currentIndex -= 1;
+        this._setCurrentIndex(this._currentIndex - 1);
     }
     else if (ks.isDownArrowPressed()) {
-        this._currentIndex += 1;
+        this._setCurrentIndex(this._currentIndex + 1);
+    }
+    else if (ks.isEnterPressed()) {
+        this._runCurrentOption(driver);
+        needsUpdate = false;
     }
     else {
         needsUpdate = false;
@@ -34,6 +75,19 @@ Menu.prototype.run = function(driver) {
     }
 
     ks.clear();
+};
+
+Menu.prototype._setCurrentIndex = function(newCurrentIndex) {
+    if (newCurrentIndex < 0 || newCurrentIndex >= this._menuItems.length) {
+        return;
+    }
+    else {
+        this._currentIndex = newCurrentIndex;
+    }
+};
+
+Menu.prototype._runCurrentOption = function(driver) {
+    this._menuItems[this._currentIndex].callback(driver);
 };
 
 function MenuPresenter(containerElement) {

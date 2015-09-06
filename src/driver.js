@@ -3,6 +3,9 @@
 var log = require('./logger.js').log;
 var KeyboardState = require('./keyboardState.js').KeyboardState;
 
+var Menu = require('./menu.js').Menu;
+var TopScores = require('./topScores.js').TopScores;
+
 function Driver() {
     this._destructors = [];
 
@@ -20,6 +23,21 @@ Driver.prototype.init = function() {
 };
 
 Driver.prototype.setModule = function(ModuleConstructor) {
+    if (typeof(ModuleConstructor) === 'string') {
+        switch(ModuleConstructor) {
+        case 'Menu':
+            ModuleConstructor = Menu;
+            break;
+
+        case 'TopScores':
+            ModuleConstructor = TopScores;
+            break;
+
+        default:
+            throw new Error('Unknown module: ' + ModuleConstructor);
+        }
+    }
+
     this._module = new ModuleConstructor(this._containerElement);
 };
 
@@ -62,6 +80,10 @@ Driver.prototype._initKeyboard = function(window) {
 
         case 13:
             this.keyboardState.setEnterPressed(true);
+            break;
+
+        case 27:
+            this.keyboardState.setEscapePressed(true);
             break;
         }
     }.bind(this);

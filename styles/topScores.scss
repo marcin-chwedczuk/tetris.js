@@ -1,0 +1,74 @@
+#top_scores {
+    color: #F35C00;
+    font-family: 'DOS_VGA';
+
+    width: 400px;
+    margin: auto;
+
+    position: relative;
+}
+
+.top-scores-title {
+    font-size: 40pt;
+    margin-left: -110px;
+    margin-right: -110px;
+    text-align: center;
+}
+
+table.top-scores {
+    font-size: 20pt;
+    width: 400px;
+    text-align: left;
+    border-spacing: 5px 15px;
+
+    .noColumn {
+        width: 10%;
+    }
+
+    .userColumn {
+        width: 70%;
+    }
+
+    .scoreColumn {
+        width: 20%;
+    }
+
+}
+
+.top-scores-help-text {
+    font-size: 20pt;
+    margin-top: 100px;
+    margin-left: -50px;
+    margin-right: -50px;
+    text-align: center;
+}
+
+.torch {
+    background-image: url('assets/torch.gif');
+    background-repeat: no-repeat;
+    background-size: 100%;
+
+    width: 120px;
+    height: 240px;
+
+    position: absolute;
+}
+
+.left-torch {
+    @extend .torch;
+
+    top: 120px;
+    left: -160px;
+}
+
+.right-torch {
+    @extend .torch;
+
+    top: 120px;
+    right: -160px;
+}
+
+.triple-space {
+    display: inline-block;
+    width: 30px;
+}

@@ -2,7 +2,9 @@
 <html lang="en">
     <head>
         <meta charset="utf-8">
+
         <title>Tetris.js</title>
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"> 
         
         <link rel="stylesheet" type="text/css" href="tetris.css">
         <script src="tetris.js"></script>
@@ -18,7 +20,7 @@
         </div>
 
         <div id="container">
-        </div>
+       </div>
 
         <script type="text/template" id="menu_template">
             <div id="menu">
@@ -32,6 +34,32 @@
                 </ul>
                 <div class="menu-help-text">
                     Use arrows to move between options,<br> use Enter to select an option.
+                </div>
+            </div>
+        </script>
+
+        <script type="text/template" id="topScores_template">
+            <div id="top_scores">
+                <h1 class="top-scores-title">T O P <span class="triple-space"></span> S C O R E S</h1>
+                <table class="top-scores">
+                    <col class="noColumn">
+                    <col class="userColumn">
+                    <col class="scoreColumn">
+
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>User</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+                <div class="left-torch"></div>
+                <div class="right-torch"></div>
+                <div class="top-scores-help-text">
+                    Press Esc for startup menu.
                 </div>
             </div>
         </script>
@@ -60,13 +88,6 @@
                     </div>
                 </div>
             </div>
-        </script>
-
-        <script>
-            var templateName = 'menu_template';
-
-            var templateHtml = document.getElementById(templateName).innerHTML;
-            document.getElementById('container').innerHTML = templateHtml;
         </script>
     </body>
 </html>
