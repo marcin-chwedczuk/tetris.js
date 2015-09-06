@@ -141,7 +141,7 @@ MenuPresenter.prototype.updateCheckboxState = function(index, isChecked) {
 };
 
 MenuPresenter.prototype._setCheckboxState = function(optionValue, isChecked) {
-    optionValue.innerText = (isChecked ? 'Yes' : 'No');
+    optionValue.textContent = (isChecked ? 'Yes' : 'No');
     optionValue.style.color = (isChecked ? 'limegreen' : 'red');
 };
 

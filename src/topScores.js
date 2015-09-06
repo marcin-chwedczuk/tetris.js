@@ -30,20 +30,20 @@ TopScoresPresenter.prototype._loadTemplate = function() {
 };
 
 TopScoresPresenter.prototype._displayTopScores = function(topScores) {
-    var table = this._container.getElementsByTagName('table')[0];
+    var tbody = this._container.getElementsByTagName('tbody')[0];
 
     for (var i = 0; i < topScores.length; i += 1) {
-        this._addTopScore(table, i, topScores.length-1, topScores[i]);
+        this._addTopScore(tbody, i, topScores.length-1, topScores[i]);
     }
 };
 
-TopScoresPresenter.prototype._addTopScore = function(table, index, maxIndex, topScore) {
+TopScoresPresenter.prototype._addTopScore = function(tbody, index, maxIndex, topScore) {
     // 0 is for thead tr
-    var row = table.insertRow(index+1);
+    var row = tbody.insertRow(index);
 
-    row.insertCell(0).innerText = String(index+1);
-    row.insertCell(1).innerText = topScore.user;
-    row.insertCell(2).innerText = String(topScore.score);
+    row.insertCell(0).appendChild(document.createTextNode(String(index+1)));
+    row.insertCell(1).appendChild(document.createTextNode(topScore.user));
+    row.insertCell(2).appendChild(document.createTextNode(String(topScore.score)));
 
     var saturation = (80 - Math.floor(80 * Math.pow(index/maxIndex, 2))) + 20;
     row.style.color = 'hsl(23, ' + saturation + '%, 48%)';
