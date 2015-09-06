@@ -1,0 +1,44 @@
+#about {
+    color: white;
+    font-family: 'DOS_VGA';
+
+    width: 760px;
+    margin: auto;
+
+    position: relative;
+}
+
+.about-title {
+    font-size: 40pt;
+    margin-left: -110px;
+    margin-right: -110px;
+    text-align: center;
+}
+
+.about-text {
+    font-size: 20pt;
+
+    padding: 10px 20px;
+    border: 1px solid white;
+    min-height: 274px;
+    position: relative;
+
+    a {
+        color: white;
+    }
+
+    #about_image {
+        position: absolute;
+        bottom: 8px;
+        right: 8px;
+    }
+}
+
+.about-help-text {
+    font-size: 18pt;
+    
+    margin-top: 90px;
+    width: 760px;
+    text-align: center;
+}
+

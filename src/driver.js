@@ -6,6 +6,7 @@ var KeyboardState = require('./keyboardState.js').KeyboardState;
 var MainMenu = require('./mainMenu.js').MainMenu;
 var TopScores = require('./topScores.js').TopScores;
 var Settings = require('./settings.js').Settings;
+var About = require('./about.js').About;
 
 var gameSettings = require('./gameSettings.js');
 
@@ -40,6 +41,10 @@ Driver.prototype.setModule = function(ModuleConstructor) {
 
         case 'Settings':
             ModuleConstructor = Settings;
+            break;
+
+        case 'About':
+            ModuleConstructor = About;
             break;
 
         default:

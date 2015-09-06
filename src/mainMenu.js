@@ -22,8 +22,8 @@ MainMenu.prototype._createMenu = function() {
         driver.setModule('Settings');
     });
 
-    this.addButton('About', function() {
-        alert('about');
+    this.addButton('About', function(driver) {
+        driver.setModule('About');
     });
 
     this.addButton('Exit', function() {
