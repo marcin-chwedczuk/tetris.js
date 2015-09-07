@@ -1,7 +1,7 @@
 'use strict';
 
-var Driver = require('./driver.js').Driver;
-var TopScoresRepository = require('./modules/topScores.js').TopScoresRepository;
+var Driver = require('driver.js').Driver;
+var TopScoresRepository = require('modules/topScoresRepository.js').TopScoresRepository;
 
 // TEST ONLY - ADD FAKE TOP SCORE
 var tsr = new TopScoresRepository();

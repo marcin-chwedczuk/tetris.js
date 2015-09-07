@@ -32,7 +32,7 @@
 
     var PROGRAM_NAME = 'tetris';
 
-    var SOURCE_JS_FILES = SOURCE_DIR + '/*.js';
+    var SOURCE_JS_FILES = SOURCE_DIR + '/**/*.js';
     var SOURCE_STYLE_FILES = STYLES_DIR + '/*.scss';
     var SOURCE_TEMPLATE_FILES = SOURCE_DIR + '/*.html';
     var SOURCE_ASSET_FILES = ASSETS_DIR + '/*';

@@ -1,15 +1,15 @@
 'use strict';
 
-var log = require('./utils/logger.js').log;
-var KeyboardState = require('./keyboardState.js').KeyboardState;
+var log = require('utils/logger.js').log;
+var KeyboardState = require('keyboardState.js').KeyboardState;
 
-var Tetris = require('./modules/tetris.js').Tetris;
-var MainMenu = require('./modules/mainMenu.js').MainMenu;
-var TopScores = require('./modules/topScores.js').TopScores;
-var Settings = require('./modules/settings.js').Settings;
-var About = require('./modules/about.js').About;
+var Tetris = require('modules/tetris.js').Tetris;
+var MainMenu = require('modules/mainMenu.js').MainMenu;
+var TopScores = require('modules/topScores.js').TopScores;
+var Settings = require('modules/settings.js').Settings;
+var About = require('modules/about.js').About;
 
-var gameSettings = require('./gameSettings.js');
+var gameSettings = require('gameSettings.js');
 
 function Driver() {
     this._destructors = [];

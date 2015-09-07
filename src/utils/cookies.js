@@ -1,6 +1,7 @@
 'use strict';
 
-var log = require('./logger.js').log;
+var log = require('utils/logger.js').log;
+var utils = require('utils/utils.js');
 
 var serializeObject = function(value) {
     var valueJson = JSON.stringify(value);
@@ -47,7 +48,7 @@ exports.setCookieValue = function(cookieName, cookieValue) {
     var cookieSafeValue = serializeObject(cookieValue);
 
     document.cookie = cookieName + '=' + cookieSafeValue + ';max-age=' + HUNDRED_YEARS_IN_SECONDS;
-    cookies[cookieName] = cookieValue;
+    cookies[cookieName] = utils.copyObject(cookieValue);
 };
 
 exports.clearCookieCache = function() {

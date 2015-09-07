@@ -9,3 +9,15 @@ exports.extend = function(objectToExtend, source) {
 
     return objectToExtend;
 };
+
+exports.copyObject = function(objectToCopy) {
+    var obj = {};
+
+    for (var propertyName in objectToCopy) {
+        if (Object.prototype.hasOwnProperty.call(objectToCopy, propertyName)) {
+            obj[propertyName] = objectToCopy[propertyName];
+        }
+    }
+
+    return obj;
+};

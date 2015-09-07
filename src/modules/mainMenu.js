@@ -1,13 +1,10 @@
 'use strict';
 
-var Menu = require('./menu.js').Menu;
+var MenuBase = require('modules/menuBase.js').MenuBase;
 
-function MainMenu(containerElement) {
-    Menu.call(this, containerElement, 'menu_template');
-}
-
-MainMenu.prototype = Object.create(Menu.prototype);
-MainMenu.prototype.constructor = MainMenu;
+var MainMenu = MenuBase.extend(function(containerElement) {
+    MenuBase.call(this, containerElement, 'menu_template');
+});
 
 MainMenu.prototype._createMenu = function() {
     this.addButton('Play', function(driver) {

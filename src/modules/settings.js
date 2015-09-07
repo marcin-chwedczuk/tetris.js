@@ -1,17 +1,13 @@
 'use strict';
 
-var Menu = require('./menu.js').Menu;
+var MenuBase = require('modules/menuBase.js').MenuBase;
 var gameSettings = require('gameSettings.js');
 
-function Settings(containerElement) {
-    Menu.call(this, containerElement, 'settings_template');
-}
-
-Settings.prototype = Object.create(Menu.prototype);
-Settings.prototype.constructor = Settings;
+var Settings = MenuBase.extend(function(containerElement) {
+    MenuBase.call(this, containerElement, 'settings_template');
+});
 
 Settings.prototype._createMenu = function() {
-
     this.addCheckbox('Audio', gameSettings.isAudioEnabled(), function(driver, isEnabled) {
         if (isEnabled) {
             gameSettings.enableAudio();
