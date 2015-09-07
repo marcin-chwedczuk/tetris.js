@@ -1,6 +1,6 @@
 'use strict';
 
-var cookies = require('./cookies.js');
+var cookies = require('./../utils/cookies.js');
 
 function TopScores(containerElement) {
     this._repo = new TopScoresRepository();

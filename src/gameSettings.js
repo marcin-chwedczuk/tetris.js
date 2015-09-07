@@ -1,7 +1,7 @@
 'use strict';
 
-var cookies = require('./cookies.js');
-var utils = require('./utils.js');
+var cookies = require('utils/cookies.js');
+var utils = require('utils/utils.js');
 
 var SETTINGS_COOKIE_NAME = 'settings';
 

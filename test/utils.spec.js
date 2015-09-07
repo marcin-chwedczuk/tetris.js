@@ -4,7 +4,7 @@
 var chai = require('chai');
 chai.should();
 
-var utils = require('../src/utils.js');
+var utils = require('./../src/utils/utils.js');
 
 describe('utils', function() {
     describe('extend', function() {

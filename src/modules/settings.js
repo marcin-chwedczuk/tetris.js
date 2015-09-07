@@ -1,7 +1,7 @@
 'use strict';
 
 var Menu = require('./menu.js').Menu;
-var gameSettings = require('./gameSettings.js');
+var gameSettings = require('gameSettings.js');
 
 function Settings(containerElement) {
     Menu.call(this, containerElement, 'settings_template');

@@ -10,8 +10,8 @@ MainMenu.prototype = Object.create(Menu.prototype);
 MainMenu.prototype.constructor = MainMenu;
 
 MainMenu.prototype._createMenu = function() {
-    this.addButton('Play', function() {
-        alert('play');
+    this.addButton('Play', function(driver) {
+        driver.setModule('Tetris');
     });
 
     this.addButton('Top Scores', function(driver) {

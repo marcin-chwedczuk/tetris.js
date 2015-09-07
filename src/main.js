@@ -1,8 +1,7 @@
 'use strict';
 
 var Driver = require('./driver.js').Driver;
-var MainMenu = require('./mainMenu.js').MainMenu;
-var TopScoresRepository = require('./topScores.js').TopScoresRepository;
+var TopScoresRepository = require('./modules/topScores.js').TopScoresRepository;
 
 // TEST ONLY - ADD FAKE TOP SCORE
 var tsr = new TopScoresRepository();
@@ -22,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function() {
     var driver = new Driver();
 
     driver.init();
-    driver.setModule(MainMenu);
+    driver.setModule('MainMenu');
 
     driver.start();
     }

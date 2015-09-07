@@ -4,7 +4,7 @@
 var chai = require('chai');
 chai.should();
 
-var KeyboardState = require('../src/keyboardState.js').KeyboardState;
+var KeyboardState = require('./../src/keyboardState.js').KeyboardState;
 
 describe('KeyboardState', function() {
     var keyboardState;

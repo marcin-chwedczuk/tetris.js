@@ -1,12 +1,13 @@
 'use strict';
 
-var log = require('./logger.js').log;
+var log = require('./utils/logger.js').log;
 var KeyboardState = require('./keyboardState.js').KeyboardState;
 
-var MainMenu = require('./mainMenu.js').MainMenu;
-var TopScores = require('./topScores.js').TopScores;
-var Settings = require('./settings.js').Settings;
-var About = require('./about.js').About;
+var Tetris = require('./modules/tetris.js').Tetris;
+var MainMenu = require('./modules/mainMenu.js').MainMenu;
+var TopScores = require('./modules/topScores.js').TopScores;
+var Settings = require('./modules/settings.js').Settings;
+var About = require('./modules/about.js').About;
 
 var gameSettings = require('./gameSettings.js');
 
@@ -31,6 +32,10 @@ Driver.prototype.init = function() {
 Driver.prototype.setModule = function(ModuleConstructor) {
     if (typeof(ModuleConstructor) === 'string') {
         switch(ModuleConstructor) {
+        case 'Tetris':
+            ModuleConstructor = Tetris;
+            break;
+
         case 'MainMenu':
             ModuleConstructor = MainMenu;
             break;

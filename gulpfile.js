@@ -72,7 +72,8 @@
     gulp.task('browserify', function() {
         var b = browserify([SOURCE_DIR + '/main.js'], { 
             debug: !release,
-            standalone: PROGRAM_NAME 
+            standalone: PROGRAM_NAME,
+            paths: ['./src']
         });
 
         return b.bundle()
