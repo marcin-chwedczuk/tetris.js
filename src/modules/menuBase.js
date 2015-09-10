@@ -1,6 +1,7 @@
 'use strict';
 
 var MenuBasePresenter = require('modules/menuBasePresenter.js').MenuBasePresenter;
+var gameSounds = require('gameSounds.js');
 
 function MenuBase(containerElement, templateName) {
     this._presenter = new MenuBasePresenter(containerElement, templateName);
@@ -51,14 +52,20 @@ MenuBase.prototype.run = function(driver) {
     var ks = driver.keyboardState;
     var needsUpdate = true;
 
-    if (ks.isUpArrowPressed()) {
-        this._setCurrentIndex(this._currentIndex - 1);
-    }
-    else if (ks.isDownArrowPressed()) {
-        this._setCurrentIndex(this._currentIndex + 1);
+    if (ks.isUpArrowPressed() || ks.isDownArrowPressed()) {
+        var newIndex = this._currentIndex + (ks.isUpArrowPressed() ? -1 : +1);
+        
+        var optionChanged = this._setCurrentIndex(newIndex);
+        if (optionChanged) {
+            gameSounds.playHighlightMenuOption();
+        }
+        else {
+            gameSounds.playCannotHighlightMenuOption();
+        }
     }
     else if (ks.isEnterPressed()) {
         this._runCurrentOption(driver);
+        gameSounds.playMenuOptionSelected();
         needsUpdate = false;
     }
     else if (ks.isEscapePressed() && this.escapeHandler) {
@@ -78,10 +85,11 @@ MenuBase.prototype.run = function(driver) {
 
 MenuBase.prototype._setCurrentIndex = function(newCurrentIndex) {
     if (newCurrentIndex < 0 || newCurrentIndex >= this._menuItems.length) {
-        return;
+        return false;
     }
     else {
         this._currentIndex = newCurrentIndex;
+        return true;
     }
 };
 
