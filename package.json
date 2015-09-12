@@ -36,7 +36,8 @@
     "gulp-sass": "~2.0.4",
     "gulp-sourcemaps": "~1.5.2",
     "gulp-if": "~1.2.5",
-    "browser-sync": "~2.8.2"
+    "browser-sync": "~2.8.2",
+    "gulp-autoprefixer": "~3.0.1"
   },
   "scripts": {
     "test": "gulp test"

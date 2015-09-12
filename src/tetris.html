@@ -73,19 +73,25 @@
         <script type="text/template" id="gameboard_template">
             <div class="border-outer">
                 <div id="viewport">
-                    <div id="gameboard" class="border-inner"></div>
+                    <div id="gameboard" class="border-inner">
+                        <div class="stone stone-green stone-4-5"></div>
+                        <div class="stone stone-red stone-4-5"></div>
+                        <div class="stone stone-gray stone-4-5"></div>
+                        <div class="stone stone-purple stone-4-5"></div>
+                        <div class="stone stone-blue stone-4-5"></div>
+                    </div>
 
                     <div id="levelIndicator" class="border-inner">
                         <span>LEVEL</span>
-                        <span class="pull-right">3</span>
+                        <span id="levelDisplay" class="pull-right">?</span>
                     </div>
                     <div id="pointsIndicator" class="border-inner">
                         <span>POINTS</span>
-                        <span class="pull-right">$3787</span>
+                        <span class="pull-right">$ <span id="pointsDisplay">?</span></span>
                     </div>
                     <div id="nextBlock" class="border-inner">
                         <span>NEXT</span>
-                        <div>foo bar</div>
+                        <div>?</div>
                     </div>
 
                     <div id="copyLeft">

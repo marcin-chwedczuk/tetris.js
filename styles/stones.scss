@@ -1,0 +1,43 @@
+@import "_gameVariables";
+
+.stone {
+    width: $blockSize;
+    height: $blockSize;
+
+    // absolute to gameboard
+    position: absolute;
+
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    background-size: contain;
+
+    top: 0px;
+    left: 0px;
+
+    transition: top 0.2s ease-in-out, left 0.2s ease-in-out, transform 1.5s ease-in-out;
+
+    &:hover {
+        top:100px;
+        left:120px;
+    }
+
+    @mixin bg($color) {
+        background-image: url('assets/tetris_stone_#{$color}.png');
+    }
+
+    &.stone-green { @include bg('green'); }
+    &.stone-red { @include bg('red'); }
+    &.stone-blue { @include bg('blue'); }
+    &.stone-gray { @include bg('gray'); }
+    &.stone-orange { @include bg('orange'); }
+    &.stone-purple { @include bg('purple'); }
+
+    @for $col from 0 through 9 {
+        @for $row from 0 through 19 {
+            &.stone-#{$row}-#{$col} {
+                top: $blockSize*$row;
+                left: $blockSize*$col;
+            }
+        }
+    }
+}

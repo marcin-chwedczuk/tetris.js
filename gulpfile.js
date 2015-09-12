@@ -22,6 +22,7 @@
     var sourcemaps = require('gulp-sourcemaps');
     var gulpif = require('gulp-if');
     var browserSync = require('browser-sync').create();
+    var autoprefixer = require('gulp-autoprefixer');
 
     var SOURCE_DIR = 'src';
     var DEST_DIR = 'dist';
@@ -104,9 +105,14 @@
         return gulp.src(SOURCE_STYLE_FILES)
             .pipe(gulpif(!release, sourcemaps.init()))
             .pipe(sass({ 
-                outputStyle: (release ? 'compressed' : 'expanded')
+                outputStyle: (release ? 'compressed' : 'expanded'),
             }).on('error', sass.logError))
+            .pipe(autoprefixer({
+                //browsers: ['last 2 version'],
+                //cascade: false
+            }))
             .pipe(concat(PROGRAM_NAME + '.css'))
+            .pipe(gulpif(!release, sourcemaps.write('.')))
             .pipe(gulp.dest(DEST_DIR));
     };
 

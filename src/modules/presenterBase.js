@@ -17,4 +17,19 @@ PresenterBase.extend = function(SubclassConstructor) {
     return SubclassConstructor;
 };
 
+PresenterBase.prototype._setElementText = function(elementId, text) {
+    var element = document.getElementById(elementId);
+    if (!element) {
+        throw new Error('cannot find element with id: ' + elementId);
+    }
+
+    // clear element
+    while (element.firstChild) {
+        element.removeChild(element.firstChild);
+    }
+
+    // set text
+    element.appendChild(document.createTextNode(text));
+};
+
 exports.PresenterBase = PresenterBase;

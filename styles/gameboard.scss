@@ -1,6 +1,5 @@
 @import "_layoutVariables";
-
-$blockSize: 40px;
+@import "_gameVariables";
 
 #viewport {
     position: relative;
@@ -13,6 +12,8 @@ $blockSize: 40px;
 
     background-color: black;
     margin: 0;
+
+    position: relative;
 }
 
 .border {
@@ -73,6 +74,10 @@ $indicatorWidth: 200px;
         &.pull-right {
             float: right;
         }
+    }
+
+    span#pointsDisplay {
+        display: inline-block;
     }
 }
 
