@@ -32,8 +32,25 @@ Block.prototype.col = function() {
     return this._col;
 };
 
-Block.color = function() {
+Block.prototype.color = function() {
     return this._color;
+};
+
+Block.prototype.setColor = function(color) {
+    this._color = color;
+};
+
+Block.prototype.copy = function() {
+    return new Block({
+        row: this._row,
+        col: this._col,
+        color: this._color
+    });
+};
+
+Block.prototype.translate = function(drow, dcol) {
+    this._row += drow;
+    this._col += dcol;
 };
 
 module.exports = Block;

@@ -3,8 +3,12 @@
 var KEYS = [
     'UpArrow',
     'DownArrow',
+    'LeftArrow',
+    'RightArrow',
+
     'Enter',
-    'Escape'
+    'Escape',
+    'Space'
 ];
 
 function KeyboardState() {

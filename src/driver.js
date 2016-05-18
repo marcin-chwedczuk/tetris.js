@@ -89,6 +89,7 @@ Driver.prototype._initKeyboard = function(window) {
         log.debug('key handler (keyCode: {0})', e.keyCode);
 
         switch(e.keyCode) {
+        // arrows
         case 38:
             this.keyboardState.setUpArrowPressed(true);
             break;
@@ -97,12 +98,25 @@ Driver.prototype._initKeyboard = function(window) {
             this.keyboardState.setDownArrowPressed(true);
             break;
 
+        case 37:
+            this.keyboardState.setLeftArrowPressed(true);
+            break;
+
+        case 39:
+            this.keyboardState.setRightArrowPressed(true);
+            break;
+
+        // other
         case 13:
             this.keyboardState.setEnterPressed(true);
             break;
 
         case 27:
             this.keyboardState.setEscapePressed(true);
+            break;
+
+        case 32:
+            this.keyboardState.setSpacePressed(true);
             break;
         }
     }.bind(this);

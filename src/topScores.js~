@@ -1,0 +1,101 @@
+'use strict';
+
+var cookies = require('./cookies.js');
+
+function TopScores(containerElement) {
+    this._repo = new TopScoresRepository();
+    this._presenter = new TopScoresPresenter(containerElement, this._repo.getTopScores());
+}
+
+TopScores.prototype.run = function(driver) {
+    var ks = driver.keyboardState;
+
+    if (ks.isEscapePressed()) {
+        driver.setModule('Menu');
+    }   
+
+    ks.clear();
+};
+
+function TopScoresPresenter(containerElement, topScores) {
+    this._container = containerElement;
+
+    this._loadTemplate();
+    this._displayTopScores(topScores);
+}
+
+TopScoresPresenter.prototype._loadTemplate = function() {
+    var templateHtml = document.getElementById('topScores_template').innerHTML;
+    this._container.innerHTML = templateHtml;
+};
+
+TopScoresPresenter.prototype._displayTopScores = function(topScores) {
+    var table = this._container.getElementsByTagName('table')[0];
+
+    for (var i = 0; i < topScores.length; i += 1) {
+        this._addTopScore(table, i, topScores.length-1, topScores[i]);
+    }
+};
+
+TopScoresPresenter.prototype._addTopScore = function(table, index, maxIndex, topScore) {
+    // 0 is for thead tr
+    var row = table.insertRow(index+1);
+
+    row.insertCell(0).innerText = String(index+1);
+    row.insertCell(1).innerText = topScore.user;
+    row.insertCell(2).innerText = String(topScore.score);
+
+    var saturation = (80 - Math.floor(80 * Math.pow(index/maxIndex, 2))) + 20;
+    row.style.color = 'hsl(23, ' + saturation + '%, 48%)';
+};
+
+function TopScoresRepository() {
+    this._cookieName = 'top-scores';
+}
+
+TopScoresRepository.prototype.getTopScores = function() {
+    var uriJson = cookies.getCookieValue(this._cookieName);
+
+    try {
+        var json = decodeURIComponent(uriJson);
+        var topScores = JSON.parse(json);
+
+        if (!Array.isArray(topScores)) {
+            return [];
+        }
+
+        return topScores;
+    }
+    catch(e) {
+        return [];
+    }
+};
+
+TopScoresRepository.prototype.addTopScore = function(user, score) {
+    var topScores = this.getTopScores();
+ 
+    topScores.push({ user:user, score:score, date:(new Date()).getTime() });
+    
+    // sort in DESC order
+    topScores.sort(function(l, r) {
+        if (l.score !== r.score) {
+            return -(l.score - r.score);
+        }
+
+        // older scores are earlier in the list
+        return (l.date - r.date);
+    });
+
+    topScores = topScores.slice(0, 10);
+    this._saveTopScores(topScores);
+};
+
+TopScoresRepository.prototype._saveTopScores = function(newTopScores) {
+    var json = JSON.stringify(newTopScores);
+    var uriJson = encodeURIComponent(json);
+
+    cookies.setCookieValue(this._cookieName, uriJson);
+};
+
+exports.TopScoresRepository = TopScoresRepository;
+exports.TopScores = TopScores;

@@ -11,7 +11,7 @@ exports.extend = function(objectToExtend, source) {
 };
 
 exports.copyObject = function(objectToCopy) {
-    var obj = {};
+    var obj = Array.isArray(objectToCopy) ? [] : {};
 
     for (var propertyName in objectToCopy) {
         if (Object.prototype.hasOwnProperty.call(objectToCopy, propertyName)) {
@@ -21,3 +21,26 @@ exports.copyObject = function(objectToCopy) {
 
     return obj;
 };
+
+exports.getRandomElement = function(array) {
+    var choosen = array[0];
+
+    for (var i = 1; i < array.length; i += 1) {
+        if ( Math.random() < (1/(i+1)) ) {
+            choosen = array[i];
+        }
+    }
+
+    return choosen;
+};
+
+exports.permutate = function(array) {
+    var len = array.length;
+
+    for (var i = 0; i < len-1; i += 1) {
+        // swap array[i] with array[randomIndex]
+        var swapIndex = i + Math.floor(Math.random() * (len-i));
+        var swap = array[i]; array[i] = array[swapIndex]; array[swapIndex] = swap;
+    }
+};
+

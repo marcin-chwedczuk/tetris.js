@@ -18,7 +18,9 @@ var deserializeObject = function(cookieValue) {
         return object;
     }
     catch(e) {
-        log.error('cannot deserialize value from cookie: {0}, cookieValue: {1}', e.message, cookieValue);
+        log.error(
+            'cannot deserialize value from cookie: {0}, cookieValue: {1}', 
+            e.message, cookieValue);
         return null;
     }
 };
@@ -27,7 +29,10 @@ var cookies = null;
 
 exports.getCookieValue = function(cookieName, defaultValue) {
     if (!cookies) {
-        var notParsedCookies = document.cookie.split('; ');
+        // split returns [''] when document.cookie is empty
+        var notParsedCookies = document.cookie ?
+            document.cookie.split('; ') :
+            [];
 
         cookies = {};
         for (var i = 0; i < notParsedCookies.length; i += 1) {
