@@ -14,7 +14,10 @@
     top: 0px;
     left: 0px;
 
-    transition: top 0.2s ease-in-out, left 0.2s ease-in-out, transform 1.5s ease-in-out;
+    /* generated using: http://cubic-bezier.com/ */
+    transition: top 0.15s cubic-bezier(.75,0,.37,1),
+                left 0.15s cubic-bezier(.75,0,.37,1),
+                opacity 0.1s cubic-bezier(.75,0,.37,1);
 
     &:hover {
         top:100px;
@@ -43,5 +46,9 @@
 
     &.stone-hidden {
         display: none;
+    }
+
+    &.swap-hide {
+        opacity: 0;
     }
 }
