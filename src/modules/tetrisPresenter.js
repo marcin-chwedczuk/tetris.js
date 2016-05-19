@@ -5,7 +5,7 @@ var Set = require('utils/set.js');
 var Map = require('utils/map.js');
 
 var PresenterBase = require('modules/presenterBase.js').PresenterBase;
-// var animationEvents = require('utils/animationEvents.js');
+var animationEvents = require('utils/animationEvents.js');
 
 var TetrisPresenter = PresenterBase.extend(function(containerElement) {
     PresenterBase.call(this, containerElement, 'gameboard_template');
@@ -97,54 +97,126 @@ TetrisPresenter.prototype._updateDom = function(container, objectId, blocks) {
     });
 };
 
-/*
-TetrisPresenter.prototype.swap = function(blocks, callbackAnimationEnd) {
-    
+TetrisPresenter.prototype.rotateCurrent = function(blocks, onAnimationCompleted) {
     var that = this;
-    var oldElements = [];
 
-    for (var i = 0; i < blocks.length; i += 1) {
-        var block = blocks[i];
-        var element = this._elements[block.id()];
-
-        oldElements.push(element);
+    var completedCount = 0;
+    function checkCompleted() {
+        if (2 === ++completedCount && onAnimationCompleted) {
+            onAnimationCompleted();
+        }
     }
 
-    animationEvents.whenAnimationEndForAll(oldElements, function() {
-        // remove old elemnts
-        blocks.forEach(function(b) {
-            that._removeElement(b.id());
-        });
+    // hide old
+    this._applyAnimation({
+        objectId: 'current',
+        container: this._gameboard,
+        blocks: blocks,
+        remove: true,
 
-        var newElements = [];
+        setUp: function(element) {
+            return (element.className.indexOf('swap-hide') === (-1));
+        },
 
-        // apply animation when adding new elements as described in:
-        // https://timtaubert.de/blog/2012/09/css-transitions-for-dynamically-created-dom-elements/
-        blocks.forEach(function(b) {
-            var element = that._createElement(b.id());
-            that._updateElement(element, b);
+        start: function(element) {
+            element.className += ' swap-hide';
+        },
 
-            element.style.opacity = 0.7;
+        onCompleted: checkCompleted
+    });
+
+    // show new
+    this._applyAnimation({
+        objectId: 'current',
+        container: this._gameboard,
+        blocks: blocks,
+
+        setUp: function(element, block) {
+            that._updateElement(element, block);
+
+            element.style.opacity = 0.3;
             // force browser engine to recompute styles
             /*jshint -W030 */
-            /*window.getComputedStyle(element).opacity;
+            window.getComputedStyle(element).opacity;
 
-            newElements.push(element);
+            return true;
+        },
+
+        start: function(element) {
+            element.style.removeProperty('opacity');
+        },
+
+        onCompleted: checkCompleted
+    });
+};
+
+/** applyAnimation({
+ *      objectId: 'foo',
+ *      container: gameboard,
+ *      blocks: blocks,
+ *      remove: true/false,
+ *
+ *      // this function should return true
+ *      // if element will be animated
+ *      setUp: function(element, block) { ... },
+ *      start: function(element, block) { ... },
+ *
+ *      onCompleted: function() { ... }
+ *  });
+ */
+TetrisPresenter.prototype._applyAnimation = function(options) {
+    var that = this;
+
+    var block2Element = this._objects.getOrCreate(options.objectId, function() { 
+        return new Map();
+    });
+ 
+    var animatedBlocks = [];
+
+    options.blocks.forEach(function(block) {
+        var element = block2Element.getOrCreate(block.id(), function() {
+            return that._createElement(options.container);
         });
 
-        animationEvents.whenAnimationEndForAll(newElements, callbackAnimationEnd);
+        if (options.setUp(element, block)) {
+            animatedBlocks.push({ 
+                block: block,
+                element: element
+            });
+        }
+    });
 
-        // start animation
-        newElements.forEach(function(el) {
-            el.style.removeProperty('opacity');
+    if (options.remove) {
+        animatedBlocks.forEach(function(pair) {
+            block2Element.remove(pair.block.id());
         });
-    });
+    }
 
-    // start animation AFTER hooking events
-    oldElements.forEach(function(el) {
-        el.className += ' swap-hide';
-    });
-};*/
+    if (animatedBlocks.length) {
+        animationEvents.whenAnimationEndForAll(
+            animatedBlocks.map(function(pair) { return pair.element; }),
+            function() {
+                if (options.remove) {
+                    animatedBlocks.forEach(function(pair) {
+                        that._removeElement(pair.element);
+                    });
+                }
+
+                if (options.onComplete) {
+                    options.onComplete();
+                }
+            });
+
+        animatedBlocks.forEach(function(pair) {
+            options.start(pair.element, pair.block);
+        });
+    }
+    else {
+        if (options.onComplete) {
+            setTimeout(options.onComplete, 0);
+        }
+    }
+};
 
 TetrisPresenter.prototype._createElement = function(container) {
     var stone = this._cache.length ? 

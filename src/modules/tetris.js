@@ -49,7 +49,7 @@ Tetris.prototype.run = function(driver) {
         else if (ks.isSpacePressed()) {
             this._lock = true;
             this._currentPiece.rotateClockwise();
-            this._presenter.swap(this._currentPiece.getBlocks(), function() {
+            this._presenter.rotateCurrent(this._currentPiece.getBlocks(), function() {
                 console.log('ANIMATION ENDED');
                 this._lock = false;
             }.bind(this));
