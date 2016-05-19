@@ -74,11 +74,6 @@
             <div class="border-outer">
                 <div id="viewport">
                     <div id="gameboard" class="border-inner">
-                        <div class="stone stone-green stone-4-5"></div>
-                        <div class="stone stone-red stone-4-5"></div>
-                        <div class="stone stone-gray stone-4-5"></div>
-                        <div class="stone stone-purple stone-4-5"></div>
-                        <div class="stone stone-blue stone-4-5"></div>
                     </div>
 
                     <div id="levelIndicator" class="border-inner">
@@ -90,8 +85,10 @@
                         <span class="pull-right">$ <span id="pointsDisplay">?</span></span>
                     </div>
                     <div id="nextBlock" class="border-inner">
-                        <span>NEXT</span>
-                        <div>?</div>
+                        <div class="fillBox">
+                            <span>NEXT</span>
+                            <div id="nextBlockDisplay"></div>
+                        </div>
                     </div>
 
                     <div id="copyLeft">

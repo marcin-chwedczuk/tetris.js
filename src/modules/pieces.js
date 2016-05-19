@@ -46,6 +46,26 @@ Piece.prototype.rotateClockwise = function() {
     this._rotation = (this._rotation + 1) % NROTATION;
 };
 
+Piece.prototype.boundingBox = function() {
+    var box = {
+        minRow: Number.MAX_VALUE,
+        maxRow: 0,
+
+        minCol: Number.MAX_VALUE,
+        maxCol: 0
+    };
+
+    this._blocks.forEach(function(b) {
+        box.minRow = Math.min(box.minRow, b.row());
+        box.maxRow = Math.max(box.maxRow, b.row());
+
+        box.minCol = Math.min(box.minCol, b.col());
+        box.maxCol = Math.max(box.maxCol, b.col());
+    });   
+
+    return box;
+};
+
 var b = function(row, col) {
     return new Block({
         row: row,
@@ -112,8 +132,8 @@ var PIECES = Object.freeze({
         name: 'O',
 
         blocks: [
-            b(0,1), b(0,2),
-            b(1,1), b(1,2)
+            b(0,0), b(0,1),
+            b(1,0), b(1,1)
         ],
 
         rotations: [

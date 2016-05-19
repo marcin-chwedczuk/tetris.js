@@ -97,6 +97,21 @@ $indicatorWidth: 200px;
     @extend .indicator;
 
     top: 157px;
+    height: 150px;
+
+    .fillBox {
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    span {
+        float: left;
+    }
+
+    #nextBlockDisplay {
+        position: absolute;   
+    }
 }
 
 #copyLeft {

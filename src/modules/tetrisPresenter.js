@@ -1,57 +1,105 @@
 /*jshint forin: false */
 'use strict';
 
-var PresenterBase = require('modules/presenterBase.js').PresenterBase;
 var Set = require('utils/set.js');
-var animationEvents = require('utils/animationEvents.js');
+var Map = require('utils/map.js');
+
+var PresenterBase = require('modules/presenterBase.js').PresenterBase;
+// var animationEvents = require('utils/animationEvents.js');
 
 var TetrisPresenter = PresenterBase.extend(function(containerElement) {
     PresenterBase.call(this, containerElement, 'gameboard_template');
 
     this._gameboard = document.getElementById('gameboard');
-    this._elements = Object.create(null);
+    this._nextBlock = document.getElementById('nextBlockDisplay');
+    this._objects = new Map();
+    this._cache = [];
 });
 
 TetrisPresenter.prototype.init = function() {
-    for (var i = 0; i < 8; i += 1) {
-        var stone = document.createElement('div');
-        stone.className = 'stone stone-green stone-0-' + i;
-        this._gameboard.appendChild(stone);
-    }
 };
 
-TetrisPresenter.prototype.draw = function(blocks) {
+TetrisPresenter.prototype.updateCurrent = function(currentPiece) {
+    this._updateDom(this._gameboard,
+                    'current',
+                    currentPiece.getBlocks());
+};
+
+TetrisPresenter.prototype.updateGameboard = function(gameboard) {
+    this._updateDom(this._gameboard,
+                    'gameboard',
+                     gameboard.getBlocks());
+};
+
+TetrisPresenter.prototype.updateNext = function(nextPiece) {
+    this._updateDom(this._nextBlock,
+                    'next',
+                    nextPiece.getBlocks());
+
+    this._centerNext(nextPiece);
+};
+
+TetrisPresenter.prototype._centerNext = function(nextPiece) {
+    var blockElement = this._nextBlock.children[0];
+    
+    var blockWidth = blockElement.offsetWidth;
+    var blockHeight = blockElement.offsetHeight;
+
+    var width = blockWidth;
+    var height = blockHeight;
+
+    var box = nextPiece.boundingBox();
+
+    width *= (box.maxCol - box.minCol + 1);
+    height *= (box.maxRow - box.minRow + 1);
+
+    var parent = this._nextBlock.parentNode;
+    var bannerHeight = 
+        parent.getElementsByTagName('span')[0].offsetHeight;
+
+    var parentWidth = parent.clientWidth;
+    var parentHeight = parent.clientHeight - bannerHeight;
+
+    this._nextBlock.style.top = 
+        Math.round(bannerHeight + (parentHeight - height)/2) + 'px';
+
+    this._nextBlock.style.left = 
+        Math.round((parentWidth - width)/2) + 'px';
+};
+
+TetrisPresenter.prototype._updateDom = function(container, objectId, blocks) {
+    var that = this;
     var idSet = new Set();
 
-    // update or add block div's
-    for (var i = 0; i < blocks.length; i += 1) {
-        var block = blocks[i],
-            blockElement;
-
-        if ( !(block.id() in this._elements) ) {
-            blockElement = this._createElement(block.id());
-        }
-        else {
-            blockElement = this._elements[block.id()];
-        }
-
-        this._updateElement(blockElement, block);
+    var block2Element = this._objects.getOrCreate(objectId, function() { 
+        return new Map();
+    });
+ 
+    blocks.forEach(function(block) {
+        var blockElement = block2Element.getOrCreate(block.id(), function() {
+            return that._createElement(container);
+        });
+        
+        that._updateElement(blockElement, block);
         idSet.add(block.id());
-    }
+    });
 
     var toRemove = new Set();
-    for (var id in this._elements) {
+    block2Element.forEach(function(id) {
         if ( !idSet.contains(id) ) {
             toRemove.add(id);
         }
-    }
+    });
 
-    toRemove.forEach(function (id) {
-        this._removeElement(id);
+    toRemove.forEach(function(id) {
+        that._removeElement(block2Element.get(id));
+        block2Element.remove(id);
     });
 };
 
+/*
 TetrisPresenter.prototype.swap = function(blocks, callbackAnimationEnd) {
+    
     var that = this;
     var oldElements = [];
 
@@ -79,7 +127,7 @@ TetrisPresenter.prototype.swap = function(blocks, callbackAnimationEnd) {
             element.style.opacity = 0.7;
             // force browser engine to recompute styles
             /*jshint -W030 */
-            window.getComputedStyle(element).opacity;
+            /*window.getComputedStyle(element).opacity;
 
             newElements.push(element);
         });
@@ -96,23 +144,24 @@ TetrisPresenter.prototype.swap = function(blocks, callbackAnimationEnd) {
     oldElements.forEach(function(el) {
         el.className += ' swap-hide';
     });
-};
+};*/
 
-TetrisPresenter.prototype._createElement = function(id) {
-    var stone = document.createElement('div');
+TetrisPresenter.prototype._createElement = function(container) {
+    var stone = this._cache.length ? 
+        this._cache.shift() : document.createElement('div');
     stone.className = 'stone stone-hidden';
 
-    this._gameboard.appendChild(stone);
-    this._elements[id] = stone;
-
+    container.appendChild(stone);
     return stone;
 };
 
-TetrisPresenter.prototype._removeElement = function(id) {
-    var element = this._elements[id];
+TetrisPresenter.prototype._removeElement = function(element) {
     element.parentNode.removeChild(element);
 
-    delete this._elements[id];
+    element.removeAttribute('style');
+    element.className = '';
+
+    this._cache.push(element);
 };
 
 TetrisPresenter.prototype._updateElement = function(element, block) {
@@ -120,12 +169,6 @@ TetrisPresenter.prototype._updateElement = function(element, block) {
     var colorClass = 'stone-' + block.color();
 
     element.className = ['stone', positionClass, colorClass].join(' ');
-};
-
-TetrisPresenter.prototype.moveDown = function() {
-};
-
-TetrisPresenter.prototype.rotate = function() {
 };
 
 TetrisPresenter.prototype.setLevel = function(level) {
