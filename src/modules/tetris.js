@@ -74,6 +74,19 @@ Tetris.prototype._tryRotateCurrentPiece = function()  {
     return false;
 };
 
+Tetris.prototype._tryTranslateCurrentPiece = function(drow, dcol) {
+    this._currentPiece.savePositionTo(this._oldPosition);
+    this._currentPiece.translate(drow, dcol);
+
+    if (this._gameboard.hasValidPosition(this._currentPiece)) {
+        return true;
+    }
+    else {
+        this._currentPiece.restorePositionFrom(this._oldPosition);
+        return false;
+    }
+};
+
 Tetris.prototype.run = function(driver) {
     var ks = driver.keyboardState;
 
@@ -82,17 +95,16 @@ Tetris.prototype.run = function(driver) {
             driver.setModule('MainMenu');
         }
         else if (ks.isDownArrowPressed()) {
-            // this._presenter.moveDown();
-            this._currentPiece.translate(+1,0);
+            this._tryTranslateCurrentPiece(1, 0);
         }
         else if (ks.isUpArrowPressed()) {
             this._nextCurrentPiece();
         }
         else if (ks.isLeftArrowPressed()) {
-            this._currentPiece.translate(0,-1);
+            this._tryTranslateCurrentPiece(0, -1);
         }
         else if (ks.isRightArrowPressed()) {
-            this._currentPiece.translate(0,+1);
+            this._tryTranslateCurrentPiece(0, +1);
         }
         else if (ks.isSpacePressed()) {
             if (this._tryRotateCurrentPiece()) {

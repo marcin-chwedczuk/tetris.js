@@ -60,7 +60,7 @@ Gameboard.prototype.hiddenHeight = function() {
 };
 
 Gameboard.prototype._isOnBoard = function(row, col) {
-    return (row >= 0 && row < HEIGHT) &&
+    return (row >= -HIDDEN && row < (HEIGHT-HIDDEN)) &&
         (col >= 0 && col < WIDTH);
 };
 
