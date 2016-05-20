@@ -28,8 +28,16 @@ Block.prototype.row = function() {
     return this._row;
 };
 
+Block.prototype.setRow = function(row) {
+    this._row = row;
+};
+
 Block.prototype.col = function() {
     return this._col;
+};
+
+Block.prototype.setCol = function(col) {
+    this._col = col;
 };
 
 Block.prototype.color = function() {

@@ -69,6 +69,28 @@ Piece.prototype.boundingBox = function() {
         box.minCol, box.maxCol);
 };
 
+Piece.prototype.savePositionTo = function(array) {
+    var currIndex = 0;
+
+    array[currIndex++] = this._rotation;
+
+    this._blocks.forEach(function(b) {
+        array[currIndex++] = b.row();
+        array[currIndex++] = b.col();
+    });
+};
+
+Piece.prototype.restorePositionFrom = function(array) {
+    var currIndex = 0;
+
+    this._rotation = array[currIndex++];
+
+    this._blocks.forEach(function(b) {
+        b.setRow(array[currIndex++]);
+        b.setCol(array[currIndex++]);
+    });
+};
+
 var b = function(row, col) {
     return new Block({
         row: row,

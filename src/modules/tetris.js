@@ -8,6 +8,8 @@ var utils = require('utils/utils.js');
 
 function Tetris(containerElement) {
     this._presenter = new TetrisPresenter(containerElement);
+    this._oldPosition = [];
+
     this.initGame();
 }
 
@@ -48,6 +50,30 @@ Tetris.prototype._centerCurrentPiece = function() {
     this._currentPiece.translate(offsetRow, offsetCol);
 };
 
+Tetris.prototype._tryRotateCurrentPiece = function()  {
+    this._currentPiece.savePositionTo(this._oldPosition);
+
+    this._currentPiece.rotateClockwise();
+    if (this._gameboard.hasValidPosition(this._currentPiece)) {
+        return true;
+    }
+
+    // side kicks from walls
+    this._currentPiece.translate(0,-1);
+    if (this._gameboard.hasValidPosition(this._currentPiece)) {
+        return true;
+    }
+
+    this._currentPiece.translate(0, 2);
+    if (this._gameboard.hasValidPosition(this._currentPiece)) {
+        return true;
+    }
+
+    // TODO: Make buzz sound
+    this._currentPiece.restorePositionFrom(this._oldPosition);
+    return false;
+};
+
 Tetris.prototype.run = function(driver) {
     var ks = driver.keyboardState;
 
@@ -69,13 +95,14 @@ Tetris.prototype.run = function(driver) {
             this._currentPiece.translate(0,+1);
         }
         else if (ks.isSpacePressed()) {
-            this._lock = true;
-            this._currentPiece.rotateClockwise();
-            this._presenter.rotateCurrent(this._currentPiece.getBlocks(), function() {
-                console.log('ANIMATION ENDED');
-                this._lock = false;
-            }.bind(this));
-            return;
+            if (this._tryRotateCurrentPiece()) {
+                this._lock = true;
+                this._presenter.rotateCurrent(this._currentPiece.getBlocks(), function() {
+                    console.log('ANIMATION ENDED');
+                    this._lock = false;
+                }.bind(this));
+                return;
+            }
         }
         else { return; }
 

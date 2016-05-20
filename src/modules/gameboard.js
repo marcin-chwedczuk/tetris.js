@@ -12,6 +12,14 @@ function Gameboard() {
     this._board = new Array(WIDTH*HEIGHT);
 }
 
+Gameboard.prototype._get = function(row, col) {
+    return this._board[row*WIDTH + col];
+};
+
+Gameboard.prototype._set = function(row, col, value) {
+    this._board[row*WIDTH + col] = value;
+};
+
 Gameboard.prototype.addBlock = function(block) {
     var row = block.row() + HIDDEN;
     var col = block.col();
@@ -24,7 +32,7 @@ Gameboard.prototype.addBlock = function(block) {
         throw new Error('invalid block col: ' + block.col());
     }
 
-    this._board[block.row()*WIDTH + block.col()] = block;
+    this._set(block.row(), block.col(), block);
 };
 
 Gameboard.prototype.addPiece = function(piece) {
@@ -49,4 +57,21 @@ Gameboard.prototype.width = function() {
 
 Gameboard.prototype.hiddenHeight = function() {
     return HIDDEN;
+};
+
+Gameboard.prototype._isOnBoard = function(row, col) {
+    return (row >= 0 && row < HEIGHT) &&
+        (col >= 0 && col < WIDTH);
+};
+
+Gameboard.prototype._isEmpty = function(row, col) {
+    return !this._get(row, col);
+};
+
+Gameboard.prototype.hasValidPosition = function(piece) {
+    return piece.getBlocks().reduce(function(acc, curr) {
+        return acc && 
+            this._isOnBoard(curr.row(), curr.col()) &&
+            this._isEmpty(curr.row(), curr.col());
+    }.bind(this), true);
 };
