@@ -42,3 +42,11 @@ Gameboard.prototype.getBlocks = function() {
 
     return blocks;
 };
+
+Gameboard.prototype.width = function() {
+    return WIDTH;
+};
+
+Gameboard.prototype.hiddenHeight = function() {
+    return HIDDEN;
+};

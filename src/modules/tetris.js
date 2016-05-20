@@ -4,6 +4,7 @@
 var TetrisPresenter = require('modules/tetrisPresenter.js').TetrisPresenter;
 var getRandomPiece = require('modules/piecesGenerator.js').getRandomPiece;
 var Gameboard = require('modules/gameboard.js').Gameboard;
+var utils = require('utils/utils.js');
 
 function Tetris(containerElement) {
     this._presenter = new TetrisPresenter(containerElement);
@@ -17,13 +18,34 @@ Tetris.prototype.initGame = function() {
     this._presenter.setLevel(1);
     this._presenter.setPoints(0);
 
-    this.nextPiece();
+    this._nextCurrentPiece();
 };
 
-Tetris.prototype.nextPiece = function() {
+Tetris.prototype._nextCurrentPiece = function() {
     this._currentPiece = this._nextPiece;
     this._nextPiece = getRandomPiece();
+    
+    this._centerCurrentPiece();
+
     this._presenter.updateNext(this._nextPiece);
+};
+
+Tetris.prototype._centerCurrentPiece = function() {
+    var box = this._currentPiece.boundingBox();
+
+    var pieceWidth = box.width();
+    var gameboardWidth = this._gameboard.width();
+
+    var offsetCol = utils.getRandomElement([
+        Math.floor((gameboardWidth-pieceWidth)/2),
+        Math.floor((gameboardWidth-pieceWidth+1)/2)
+    ]);
+    offsetCol -= box.minCol;
+
+    var offsetRow = (box.height() === 1) ? 1 : 0;
+    offsetRow -= this._gameboard.hiddenHeight();
+    
+    this._currentPiece.translate(offsetRow, offsetCol);
 };
 
 Tetris.prototype.run = function(driver) {
@@ -38,7 +60,7 @@ Tetris.prototype.run = function(driver) {
             this._currentPiece.translate(+1,0);
         }
         else if (ks.isUpArrowPressed()) {
-            this.nextPiece();
+            this._nextCurrentPiece();
         }
         else if (ks.isLeftArrowPressed()) {
             this._currentPiece.translate(0,-1);

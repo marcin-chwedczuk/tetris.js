@@ -50,8 +50,8 @@ TetrisPresenter.prototype._centerNext = function(nextPiece) {
 
     var box = nextPiece.boundingBox();
 
-    width *= (box.maxCol - box.minCol + 1);
-    height *= (box.maxRow - box.minRow + 1);
+    width *= box.width();
+    height *= box.height();
 
     var parent = this._nextBlock.parentNode;
     var bannerHeight = 
@@ -237,7 +237,11 @@ TetrisPresenter.prototype._removeElement = function(element) {
 };
 
 TetrisPresenter.prototype._updateElement = function(element, block) {
-    var positionClass = 'stone-' + block.row() + '-' + block.col();
+    var blockRow = (block.row() >= 0) ? 
+        block.row() : 
+        'm' + Math.abs(block.row());
+
+    var positionClass = 'stone-' + blockRow + '-' + block.col();
     var colorClass = 'stone-' + block.color();
 
     element.className = ['stone', positionClass, colorClass].join(' ');

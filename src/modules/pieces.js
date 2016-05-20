@@ -2,6 +2,7 @@
 
 var COLORS = require('modules/colors.js');
 var Block = require('modules/block.js');
+var BoundingBox = require('utils/boundingBox.js');
 
 // initially piece is located in box that 
 // have left upper corner in (0,0)
@@ -63,7 +64,9 @@ Piece.prototype.boundingBox = function() {
         box.maxCol = Math.max(box.maxCol, b.col());
     });   
 
-    return box;
+    return new BoundingBox(
+        box.minRow, box.maxRow,
+        box.minCol, box.maxCol);
 };
 
 var b = function(row, col) {

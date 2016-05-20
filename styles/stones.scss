@@ -35,6 +35,18 @@
     &.stone-orange { @include bg('orange'); }
     &.stone-purple { @include bg('purple'); }
 
+    /* 2 first rows of gameboard are hiden,
+     * we use m2 to signify -2 row.
+     */
+    @for $col from 0 through 9 {
+        @for $row from 1 through 2 {
+            &.stone-m#{$row}-#{$col} {
+                top: -$blockSize*$row;
+                left: $blockSize*$col;
+            }
+        }
+    }
+    
     @for $col from 0 through 9 {
         @for $row from 0 through 19 {
             &.stone-#{$row}-#{$col} {
