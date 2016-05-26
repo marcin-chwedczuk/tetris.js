@@ -12,20 +12,19 @@ var KEYS = [
 ];
 
 function KeyboardState() {
-    this.clear();
+    this._keyboardState = Object.create(null);
 }
 
 KeyboardState.prototype.clear = function() {
-    this._keyboardState = {};
+    // TODO: Clean up
 };
 
-KeyboardState.prototype._setKeyPressed = function(keyId, isPressed) {
-    this._keyboardState[keyId] = isPressed;
+KeyboardState.prototype._setKeyPressed = function(keyId, pressed) {
+    this._keyboardState[keyId] = !!pressed;
 };
 
 KeyboardState.prototype._isKeyPressed = function(keyId) {
-    var state = this._keyboardState[keyId];
-    return (state ? true : false);
+    return this._keyboardState[keyId] || false;
 };
 
 // create key accessors
@@ -39,8 +38,8 @@ for (var i = 0; i < KEYS.length; i += 1) {
             return this._isKeyPressed(keyId);
         };
 
-        KeyboardState.prototype['set' + keyId + 'Pressed'] = function(isPressed) {
-            return this._setKeyPressed(keyId, isPressed);
+        KeyboardState.prototype['set' + keyId + 'Pressed'] = function(pressed) {
+            return this._setKeyPressed(keyId, pressed);
         };
     })();
 }

@@ -70,7 +70,7 @@ Driver.prototype.start = function() {
 
         this._module.run(this, diffMs);
 
-        setTimeout(handler, 1000/25);
+        setTimeout(handler, 50);
     }.bind(this);
 
     handler();
@@ -85,46 +85,51 @@ Driver.prototype.destroy = function() {
 };
 
 Driver.prototype._initKeyboard = function(window) {
-    var handler = function(e) {
-        log.debug('key handler (keyCode: {0})', e.keyCode);
+    var handler = function(pressed, e) {
+        console.log('key: ' + e.keyCode + ' : ' + pressed);
 
         switch(e.keyCode) {
         // arrows
         case 38:
-            this.keyboardState.setUpArrowPressed(true);
+            this.keyboardState.setUpArrowPressed(pressed);
             break;
 
         case 40:
-            this.keyboardState.setDownArrowPressed(true);
+            this.keyboardState.setDownArrowPressed(pressed);
             break;
 
         case 37:
-            this.keyboardState.setLeftArrowPressed(true);
+            this.keyboardState.setLeftArrowPressed(pressed);
             break;
 
         case 39:
-            this.keyboardState.setRightArrowPressed(true);
+            this.keyboardState.setRightArrowPressed(pressed);
             break;
 
         // other
         case 13:
-            this.keyboardState.setEnterPressed(true);
+            this.keyboardState.setEnterPressed(pressed);
             break;
 
         case 27:
-            this.keyboardState.setEscapePressed(true);
+            this.keyboardState.setEscapePressed(pressed);
             break;
 
         case 32:
-            this.keyboardState.setSpacePressed(true);
+            this.keyboardState.setSpacePressed(pressed);
             break;
         }
-    }.bind(this);
+    };
 
-    window.addEventListener('keydown', handler, false);
+    var downHandler = handler.bind(this, true);
+    var upHandler = handler.bind(this, false);
+
+    window.addEventListener('keydown', downHandler, false);
+    window.addEventListener('keyup', upHandler, false);
 
     this._registerDestructor(function() {
-        window.removeEventListener('keydown', handler, false);
+        window.removeEventListener('keydown', downHandler, false);
+        window.removeEventListener('keyup', upHandler, false);
     });
 };
 

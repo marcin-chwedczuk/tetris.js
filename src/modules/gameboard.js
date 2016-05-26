@@ -1,10 +1,12 @@
 'use strict';
 
+var constants = require('modules/constants.js');
+
 // two first rows of gameboard are hidden
 // these are the place where new blocks appear
-var WIDTH = 10;
-var HEIGHT = 22;
-var HIDDEN = 2;
+var WIDTH = constants.GAMEBOARD_WIDTH;
+var HEIGHT = constants.GAMEBOARD_HIDDEN_HEIGHT + constants.GAMEBOARD_VISIBLE_HEIGHT;
+var HIDDEN = constants.GAMEBOARD_HIDDEN_HEIGHT;
 
 exports.Gameboard = Gameboard;
 

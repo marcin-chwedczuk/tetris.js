@@ -1,15 +1,16 @@
 
 'use strict';
 
-var TetrisPresenter = require('modules/tetrisPresenter.js').TetrisPresenter;
+var TetrisPresenter = require('modules/tetrisPresenterNA.js').TetrisPresenter;
 var getRandomPiece = require('modules/piecesGenerator.js').getRandomPiece;
 var Gameboard = require('modules/gameboard.js').Gameboard;
 var utils = require('utils/utils.js');
 
 function Tetris(containerElement) {
     this._presenter = new TetrisPresenter(containerElement);
-    this._oldPosition = [];
+    this._presenter.init();
 
+    this._oldPosition = [];
     this.initGame();
 }
 
@@ -21,6 +22,9 @@ Tetris.prototype.initGame = function() {
     this._presenter.setPoints(0);
 
     this._nextCurrentPiece();
+
+    this._time = 0;
+    this._movementFrame = 0;
 };
 
 Tetris.prototype._nextCurrentPiece = function() {
@@ -64,7 +68,7 @@ Tetris.prototype._tryRotateCurrentPiece = function()  {
         return true;
     }
 
-    this._currentPiece.translate(0, 2);
+    this._currentPiece.translate(0, 1);
     if (this._gameboard.hasValidPosition(this._currentPiece)) {
         return true;
     }
@@ -87,43 +91,82 @@ Tetris.prototype._tryTranslateCurrentPiece = function(drow, dcol) {
     }
 };
 
-Tetris.prototype.run = function(driver) {
-    var ks = driver.keyboardState;
+Tetris.prototype._isLocked = function() {
+    return (this._lock > 0);
+};
 
-    try {
-        if (ks.isEscapePressed()) {
-            driver.setModule('MainMenu');
-        }
-        else if (ks.isDownArrowPressed()) {
-            this._tryTranslateCurrentPiece(1, 0);
-        }
-        else if (ks.isUpArrowPressed()) {
+Tetris.prototype._lockFor = function(timeMs) {
+    var that = this;
+
+    that._lock = that._lock || 0;
+    that._lock++;
+
+    setTimeout(function() {
+        that._lock--;
+    }, timeMs);
+};
+
+Tetris.prototype._addToCommandQueue = function(ks) {
+    var command = null;
+
+    if (ks.isEscapePressed()) {
+        command = 'esc';
+    }
+    else if (ks.isDownArrowPressed()) {
+        command = 'down';
+    }
+    else if (ks.isUpArrowPressed()) {
+        command = 'up';
+    }
+    else if (ks.isRightArrowPressed()) {
+        command = 'right';
+    }
+    else if (ks.isLeftArrowPressed()) {
+        command = 'left';
+    }
+    else if (ks.isSpacePressed()) {
+        command = 'space';
+    }
+    else {
+        return;
+    }
+
+    this._command = command;
+};
+
+Tetris.prototype.run = function(driver, diffMs) {
+    this._addToCommandQueue(driver.keyboardState);
+
+    this._time += diffMs;
+
+    if (this._isLocked()) {
+        return;
+    }
+
+    var command = this._command;
+    this._command = null;
+    switch(command) {
+        case 'down':
+            this._tryTranslateCurrentPiece(2, 0);
+            break;
+
+        case 'left': case 'right':
+            this._tryTranslateCurrentPiece(0, command === 'left' ? -1 : 1);
+            break;
+
+        case 'up':
+            break;
+
+        case 'space':
             this._nextCurrentPiece();
-        }
-        else if (ks.isLeftArrowPressed()) {
-            this._tryTranslateCurrentPiece(0, -1);
-        }
-        else if (ks.isRightArrowPressed()) {
-            this._tryTranslateCurrentPiece(0, +1);
-        }
-        else if (ks.isSpacePressed()) {
-            if (this._tryRotateCurrentPiece()) {
-                this._lock = true;
-                this._presenter.rotateCurrent(this._currentPiece.getBlocks(), function() {
-                    console.log('ANIMATION ENDED');
-                    this._lock = false;
-                }.bind(this));
-                return;
-            }
-        }
-        else { return; }
+            break;
+    }
 
-        this._presenter.updateCurrent(this._currentPiece);
-        this._presenter.updateGameboard(this._gameboard);
-    }
-    finally {
-        ks.clear();
-    }
+    this._presenter.draw(this._currentPiece.getBlocks());
+    this._presenter.draw(this._gameboard.getBlocks());
+
+    this._presenter.swapBuffers();
+    this._request = '';
 };
 
 exports.Tetris = Tetris;
