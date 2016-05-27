@@ -57,7 +57,8 @@ Driver.prototype.setModule = function(ModuleConstructor) {
         }
     }
 
-    this._module = new ModuleConstructor(this._containerElement);
+    this.keyboardState.reset();
+    this._module = new ModuleConstructor(this._containerElement, this);
 };
 
 Driver.prototype.start = function() {
@@ -73,7 +74,7 @@ Driver.prototype.start = function() {
         
         var interval = this._module.getInterval ?
             this._module.getInterval() :
-            1000/10;
+            1000/25;
         setTimeout(handler, interval);
 
     }.bind(this);

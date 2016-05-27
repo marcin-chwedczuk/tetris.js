@@ -6,15 +6,17 @@ var getRandomPiece = require('modules/piecesGenerator.js').getRandomPiece;
 var Gameboard = require('modules/gameboard.js').Gameboard;
 var utils = require('utils/utils.js');
 
-function Tetris(containerElement) {
+function Tetris(containerElement, driver) {
     this._presenter = new TetrisPresenter(containerElement);
     this._presenter.init();
 
     this._oldPosition = [];
-    this.initGame();
+    this.initGame(driver);
 }
 
-Tetris.prototype.initGame = function() {
+Tetris.prototype.initGame = function(driver) {
+    driver.keyboardState.disableRepeat('UpArrow');
+
     this._gameboard = new Gameboard();
     this._nextPiece = getRandomPiece();
 
@@ -72,7 +74,7 @@ Tetris.prototype._tryRotateCurrentPiece = function()  {
         return true;
     }
 
-    this._currentPiece.translate(0, 1);
+    this._currentPiece.translate(0, 2);
     if (this._gameboard.hasValidPosition(this._currentPiece)) {
         return true;
     }
@@ -160,6 +162,7 @@ Tetris.prototype.run = function(driver, diffMs) {
             break;
 
         case 'up':
+            this._tryRotateCurrentPiece();
             break;
 
         case 'space':

@@ -15,9 +15,13 @@ var KEYS = [
 var WAIT_BEFORE_KEY_REPEAT_MS = 200/*miliseconds*/;
 
 function KeyboardState() {
+    this.reset();
+}
+
+KeyboardState.prototype.reset = function() {
     this._hardwareState = Object.create(null);
     this._softwareState = Object.create(null);
-}
+};
 
 KeyboardState.prototype.clear = function() {
     for (var keyId in this._softwareState) {
@@ -29,6 +33,13 @@ KeyboardState.prototype.refresh = function() {
     for (var keyId in this._hardwareState) {
         this._softwareState[keyId] = this._getSoftwareKeyStateFromHardware(keyId);
     }
+};
+
+KeyboardState.prototype.disableRepeat = function(keyId) {
+    var keyState = this._hardwareState[keyId] || {};
+    this._hardwareState[keyId] = keyState;
+
+    keyState.disableRepeat = true;
 };
 
 KeyboardState.prototype._getSoftwareKeyStateFromHardware = function(keyId) {
@@ -45,6 +56,10 @@ KeyboardState.prototype._getSoftwareKeyStateFromHardware = function(keyId) {
     if (!keyState.cleared) {
         keyState.cleared = true;
         return true;
+    }
+
+    if (keyState.disableRepeat) {
+        return false;
     }
 
     var diffMs = (new Date()).getTime() - keyState.timestamp;
