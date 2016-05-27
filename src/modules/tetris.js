@@ -27,6 +27,10 @@ Tetris.prototype.initGame = function() {
     this._movementFrame = 0;
 };
 
+Tetris.prototype.getInterval = function() {
+    return 50;
+};
+
 Tetris.prototype._nextCurrentPiece = function() {
     this._currentPiece = this._nextPiece;
     this._nextPiece = getRandomPiece();
@@ -132,6 +136,7 @@ Tetris.prototype._addToCommandQueue = function(ks) {
     }
 
     this._command = command;
+    ks.clear();
 };
 
 Tetris.prototype.run = function(driver, diffMs) {
@@ -147,7 +152,7 @@ Tetris.prototype.run = function(driver, diffMs) {
     this._command = null;
     switch(command) {
         case 'down':
-            this._tryTranslateCurrentPiece(2, 0);
+            this._tryTranslateCurrentPiece(1, 0);
             break;
 
         case 'left': case 'right':

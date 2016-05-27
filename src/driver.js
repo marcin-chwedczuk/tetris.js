@@ -68,9 +68,14 @@ Driver.prototype.start = function() {
         var diffMs = (currentTime - lastTime);
         lastTime = currentTime;
 
+        this.keyboardState.refresh();
         this._module.run(this, diffMs);
+        
+        var interval = this._module.getInterval ?
+            this._module.getInterval() :
+            1000/10;
+        setTimeout(handler, interval);
 
-        setTimeout(handler, 50);
     }.bind(this);
 
     handler();
