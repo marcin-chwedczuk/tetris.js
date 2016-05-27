@@ -52,7 +52,7 @@ KeyboardState.prototype._getSoftwareKeyStateFromHardware = function(keyId) {
         return false;
     }
 
-    // first press before REPATE_WAIT
+    // first press before REPEATE_WAIT
     if (!keyState.cleared) {
         keyState.cleared = true;
         return true;

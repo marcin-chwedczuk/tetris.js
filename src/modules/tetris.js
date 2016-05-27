@@ -2,11 +2,13 @@
 'use strict';
 
 var TetrisPresenter = require('modules/tetrisPresenterNA.js').TetrisPresenter;
-var getRandomPiece = require('modules/piecesGenerator.js').getRandomPiece;
 var Gameboard = require('modules/gameboard.js').Gameboard;
+var TetrisTimings = require('modules/tetrisTimings.js');
+var getRandomPiece = require('modules/piecesGenerator.js').getRandomPiece;
 var utils = require('utils/utils.js');
 
 function Tetris(containerElement, driver) {
+    this._timings = new TetrisTimings();
     this._presenter = new TetrisPresenter(containerElement);
     this._presenter.init();
 
@@ -25,7 +27,6 @@ Tetris.prototype.initGame = function(driver) {
 
     this._nextCurrentPiece();
 
-    this._time = 0;
     this._movementFrame = 0;
 };
 
@@ -36,6 +37,7 @@ Tetris.prototype.getInterval = function() {
 Tetris.prototype._nextCurrentPiece = function() {
     this._currentPiece = this._nextPiece;
     this._nextPiece = getRandomPiece();
+    this._timings.pieceMovedDown();
     
     this._centerCurrentPiece();
 
@@ -84,15 +86,23 @@ Tetris.prototype._tryRotateCurrentPiece = function()  {
     return false;
 };
 
-Tetris.prototype._tryTranslateCurrentPiece = function(drow, dcol) {
+Tetris.prototype._canTranslateCurrentPiece = function(drow, dcol) {
     this._currentPiece.savePositionTo(this._oldPosition);
-    this._currentPiece.translate(drow, dcol);
 
-    if (this._gameboard.hasValidPosition(this._currentPiece)) {
+    this._currentPiece.translate(drow, dcol);
+    var result = this._gameboard.hasValidPosition(this._currentPiece);
+ 
+    this._currentPiece.restorePositionFrom(this._oldPosition);
+    
+    return result;
+};
+
+Tetris.prototype._tryTranslateCurrentPiece = function(drow, dcol) {
+    if (this._canTranslateCurrentPiece(drow, dcol)) {
+        this._currentPiece.translate(drow, dcol);
         return true;
     }
     else {
-        this._currentPiece.restorePositionFrom(this._oldPosition);
         return false;
     }
 };
@@ -112,7 +122,7 @@ Tetris.prototype._lockFor = function(timeMs) {
     }, timeMs);
 };
 
-Tetris.prototype._addToCommandQueue = function(ks) {
+Tetris.prototype._saveCommand = function(ks) {
     var command = null;
 
     if (ks.isEscapePressed()) {
@@ -141,40 +151,74 @@ Tetris.prototype._addToCommandQueue = function(ks) {
     ks.clear();
 };
 
-Tetris.prototype.run = function(driver, diffMs) {
-    this._addToCommandQueue(driver.keyboardState);
-
-    this._time += diffMs;
-
-    if (this._isLocked()) {
-        return;
-    }
-
+Tetris.prototype._getCommand = function() {
     var command = this._command;
     this._command = null;
-    switch(command) {
-        case 'down':
-            this._tryTranslateCurrentPiece(1, 0);
-            break;
+    return command;
+};
 
+Tetris.prototype._hasHiddenParts = function(piece) {
+    var box = piece.boundingBox();
+    return (box.minRow < 0);
+};
+
+Tetris.prototype._tryLockCurrentPiece = function() {
+    if (!this._canTranslateCurrentPiece(1, 0)) {
+        if (this._hasHiddenParts(this._currentPiece)) {
+            // TODO: Game over
+            console.log('game over!');
+        }
+        else {
+            this._gameboard.addPiece(this._currentPiece);
+            this._nextCurrentPiece();
+            this._lockFor(500);
+        }
+
+        return true;
+    }
+
+    return false;
+};
+
+Tetris.prototype.run = function(driver, diffMs) {
+    this._saveCommand(driver.keyboardState);
+    this._timings.updateTime(diffMs);
+
+    if (this._isLocked()) { return; }
+
+    var command = this._getCommand();
+    switch(command) {
         case 'left': case 'right':
             this._tryTranslateCurrentPiece(0, command === 'left' ? -1 : 1);
+            break;
+
+        case 'down':
+            this._tryTranslateCurrentPiece(1, 0);
             break;
 
         case 'up':
             this._tryRotateCurrentPiece();
             break;
 
-        case 'space':
-            this._nextCurrentPiece();
+        case 'esc':
+            driver.setModule('MainMenu');
             break;
+
+        // TODO: Pause
+    }
+
+    var pieceLocked = this._tryLockCurrentPiece();
+    if (!pieceLocked) {
+        if (this._timings.shouldMovePieceDown()) {
+            this._tryTranslateCurrentPiece(1, 0);
+            this._timings.pieceMovedDown();
+        }
     }
 
     this._presenter.draw(this._currentPiece.getBlocks());
     this._presenter.draw(this._gameboard.getBlocks());
 
     this._presenter.swapBuffers();
-    this._request = '';
 };
 
 exports.Tetris = Tetris;
