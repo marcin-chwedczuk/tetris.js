@@ -116,8 +116,9 @@ TetrisPresenter.prototype.swapBuffers = function() {
     this._clearCurrentBuffer();
 };
 
-TetrisPresenter.prototype.draw = function(blocks) {
+TetrisPresenter.prototype.draw = function(blocks, options) {
     var buff = this._currentBuffer;
+    var isGhost = options && options.ghost;
     
     for (var i = 0; i < blocks.length; i += 1) {
         var block = blocks[i];
@@ -127,7 +128,8 @@ TetrisPresenter.prototype.draw = function(blocks) {
             continue;
         }
 
-        buff[block.row()][block.col()] = block.color();
+        var color = isGhost ? 'ghost-' + block.color() : block.color();
+        buff[block.row()][block.col()] = color;
     }
 };
 

@@ -23,12 +23,25 @@
         background-image: url('assets/tetris_stone_#{$color}.png');
     }
 
+    @mixin ghost-bg($color) {
+        @include bg($color);
+        opacity: 0.25;
+    }
+
+
     &.stone-green { @include bg('green'); }
     &.stone-red { @include bg('red'); }
     &.stone-blue { @include bg('blue'); }
     &.stone-gray { @include bg('gray'); }
     &.stone-orange { @include bg('orange'); }
     &.stone-purple { @include bg('purple'); }
+
+    &.stone-ghost-green { @include ghost-bg('green'); }
+    &.stone-ghost-red { @include ghost-bg('red'); }
+    &.stone-ghost-blue { @include ghost-bg('blue'); }
+    &.stone-ghost-gray { @include ghost-bg('gray'); }
+    &.stone-ghost-orange { @include ghost-bg('orange'); }
+    &.stone-ghost-purple { @include ghost-bg('purple'); }
 
     /* 2 first rows of gameboard are hiden,
      * we use m2 to signify -2 row.

@@ -86,19 +86,19 @@ Tetris.prototype._tryRotateCurrentPiece = function()  {
     return false;
 };
 
-Tetris.prototype._canTranslateCurrentPiece = function(drow, dcol) {
-    this._currentPiece.savePositionTo(this._oldPosition);
+Tetris.prototype._canTranslatePiece = function(piece, drow, dcol) {
+    piece.savePositionTo(this._oldPosition);
 
-    this._currentPiece.translate(drow, dcol);
-    var result = this._gameboard.hasValidPosition(this._currentPiece);
+    piece.translate(drow, dcol);
+    var result = this._gameboard.hasValidPosition(piece);
  
-    this._currentPiece.restorePositionFrom(this._oldPosition);
+    piece.restorePositionFrom(this._oldPosition);
     
     return result;
 };
 
 Tetris.prototype._tryTranslateCurrentPiece = function(drow, dcol) {
-    if (this._canTranslateCurrentPiece(drow, dcol)) {
+    if (this._canTranslatePiece(this._currentPiece, drow, dcol)) {
         this._currentPiece.translate(drow, dcol);
         return true;
     }
@@ -163,7 +163,7 @@ Tetris.prototype._hasHiddenParts = function(piece) {
 };
 
 Tetris.prototype._tryLockCurrentPiece = function() {
-    if (!this._canTranslateCurrentPiece(1, 0)) {
+    if (!this._canTranslatePiece(this._currentPiece, 1, 0)) {
         if (this._hasHiddenParts(this._currentPiece)) {
             // TODO: Game over
             console.log('game over!');
@@ -178,6 +178,16 @@ Tetris.prototype._tryLockCurrentPiece = function() {
     }
 
     return false;
+};
+
+Tetris.prototype._getGhostPiece = function() {
+    var ghostPiece = this._currentPiece.copy();
+
+    while (this._canTranslatePiece(ghostPiece, 1, 0)) {
+        ghostPiece.translate(1, 0);
+    }
+
+    return ghostPiece;
 };
 
 Tetris.prototype.run = function(driver, diffMs) {
@@ -213,6 +223,8 @@ Tetris.prototype.run = function(driver, diffMs) {
             this._tryTranslateCurrentPiece(1, 0);
             this._timings.pieceMovedDown();
         }
+
+        this._presenter.draw(this._getGhostPiece().getBlocks(), { ghost: true });
     }
 
     this._presenter.draw(this._currentPiece.getBlocks());

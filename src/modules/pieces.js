@@ -16,9 +16,11 @@ function Piece(type, blocks, rotation) {
 }
 
 Piece.prototype.copy = function() {
-    return new Piece(this._blocks.map(function(block) {
+    var blocksCopy = this._blocks.map(function(block) {
         return block.copy();
-    }));
+    });
+    
+    return new Piece(this._type, blocksCopy, this._rotation);
 };
 
 Piece.prototype.setColor = function(color) {
