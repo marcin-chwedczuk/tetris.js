@@ -11,6 +11,7 @@ var TetrisPresenter = PresenterBase.extend(function(containerElement) {
     PresenterBase.call(this, containerElement, 'gameboard_template');
 
     this._gameboard = document.getElementById('gameboard');
+    this._nextBlock = document.getElementById('nextBlockDisplay');
 
     this._gameboardWidth = constants.GAMEBOARD_WIDTH;
     this._gameboardHeight = constants.GAMEBOARD_VISIBLE_HEIGHT;
@@ -133,14 +134,58 @@ TetrisPresenter.prototype.draw = function(blocks, options) {
     }
 };
 
-TetrisPresenter.prototype.updateCurrent = function() {
+TetrisPresenter.prototype.updateNext = function(piece) {
+    var nextBlock = this._nextBlock;
+
+    // remove all elements
+    while (nextBlock.lastChild) {
+        nextBlock.removeChild(nextBlock.lastChild);
+    }
+
+    // create element per block
+    piece.getBlocks().forEach(function(b) {
+        var blockElement = document.createElement('div');
+
+        var positionClass = 'stone-' + b.row() + '-' + b.col();
+        var colorClass = 'stone-' + b.color();
+
+        blockElement.className = ['stone', positionClass, colorClass].join(' ');
+
+        nextBlock.appendChild(blockElement);
+    });
+
+    this._centerNextPiece(piece);
 };
 
-TetrisPresenter.prototype.updateGameboard = function() {
+TetrisPresenter.prototype._centerNextPiece = function(nextPiece) {
+    var blockElement = this._nextBlock.children[0];
+    
+    var blockWidth = blockElement.offsetWidth;
+    var blockHeight = blockElement.offsetHeight;
+
+    var width = blockWidth;
+    var height = blockHeight;
+
+    var box = nextPiece.boundingBox();
+
+    width *= box.width();
+    height *= box.height();
+
+    var parent = this._nextBlock.parentNode;
+    var bannerHeight = 
+        parent.getElementsByTagName('span')[0].offsetHeight;
+
+    var parentWidth = parent.clientWidth;
+    var parentHeight = parent.clientHeight - bannerHeight;
+
+    this._nextBlock.style.top = 
+        Math.round(bannerHeight + (parentHeight - height)/2) + 'px';
+
+    this._nextBlock.style.left = 
+        Math.round((parentWidth - width)/2) + 'px';
 };
 
-TetrisPresenter.prototype.updateNext = function() {
-};
+
 
 TetrisPresenter.prototype.setLevel = function(level) {
     this._setElementText('levelDisplay', level.toString());
