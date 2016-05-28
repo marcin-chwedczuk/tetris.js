@@ -217,6 +217,8 @@ Tetris.prototype.run = function(driver, diffMs) {
         // TODO: Pause
     }
 
+    this._gameboard.removeFirstFullRow();
+
     var pieceLocked = this._tryLockCurrentPiece();
     if (!pieceLocked) {
         if (this._timings.shouldMovePieceDown()) {
