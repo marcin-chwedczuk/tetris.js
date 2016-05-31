@@ -58,7 +58,16 @@ Driver.prototype.setModule = function(ModuleConstructor) {
     }
 
     this.keyboardState.reset();
+    this._destroyOldModule();
     this._module = new ModuleConstructor(this._containerElement, this);
+};
+
+Driver.prototype._destroyOldModule = function() {
+    if (this._module && this._module.destroy) {
+        this._module.destroy();
+    }
+
+    this._module = null;
 };
 
 Driver.prototype.start = function() {
@@ -86,7 +95,7 @@ Driver.prototype.destroy = function() {
     log.debug('destroying driver...');
 
     this._containerElement = null;
-    this._module = null;
+    this._destroyOldModule();
     this._runDestructors();
 };
 

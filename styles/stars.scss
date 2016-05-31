@@ -1,0 +1,24 @@
+@import "_gameVariables";
+
+.particle {
+    position: absolute;
+    z-index: 99999;
+    
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    background-size: contain;
+
+    background-image: url('assets/star_red.png');
+
+    @mixin bg($color) {
+        background-image: url('assets/star_#{$color}.png');
+    }
+
+    &.particle-green { @include bg('green'); }
+    &.particle-red { @include bg('red'); }
+    &.particle-blue { @include bg('blue'); }
+    &.particle-gray { @include bg('gray'); }
+    &.particle-orange { @include bg('orange'); }
+    &.particle-purple { @include bg('purple'); }
+}
+

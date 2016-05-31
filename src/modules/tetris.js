@@ -16,6 +16,10 @@ function Tetris(containerElement, driver) {
     this.initGame(driver);
 }
 
+Tetris.prototype.destroy = function() {
+    this._presenter.destroy();
+};
+
 Tetris.prototype.initGame = function(driver) {
     driver.keyboardState.disableRepeat('UpArrow');
 
@@ -190,6 +194,26 @@ Tetris.prototype._getGhostPiece = function() {
     return ghostPiece;
 };
 
+Tetris.prototype._moveCurrentPieceDown = function() {
+    if (this._timings.shouldMovePieceDown()) {
+        this._tryTranslateCurrentPiece(1, 0);
+        this._timings.pieceMovedDown();
+    }
+};
+
+Tetris.prototype._tryRemoveFullRow = function() {
+    var fullRowRemoved = this._gameboard.removeFirstFullRow();
+
+    if (fullRowRemoved !== null) {
+        this._presenter.fullRowRemovedAnimation(fullRowRemoved);
+
+        this._lockFor(2000);
+        return true;
+    }
+
+    return false;
+};
+
 Tetris.prototype.run = function(driver, diffMs) {
     this._saveCommand(driver.keyboardState);
     this._timings.updateTime(diffMs);
@@ -214,18 +238,15 @@ Tetris.prototype.run = function(driver, diffMs) {
             driver.setModule('MainMenu');
             break;
 
+        case 'space':
+            this._presenter.fullRowRemovedAnimation(8);
+            break;
         // TODO: Pause
     }
 
-    this._gameboard.removeFirstFullRow();
-
-    var pieceLocked = this._tryLockCurrentPiece();
-    if (!pieceLocked) {
-        if (this._timings.shouldMovePieceDown()) {
-            this._tryTranslateCurrentPiece(1, 0);
-            this._timings.pieceMovedDown();
-        }
-
+    var rowRemoved = this._tryRemoveFullRow();
+    if (!rowRemoved && !this._tryLockCurrentPiece()) {
+        this._moveCurrentPieceDown();
         this._presenter.draw(this._getGhostPiece().getBlocks(), { ghost: true });
     }
 

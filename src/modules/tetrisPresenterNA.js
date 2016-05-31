@@ -1,11 +1,8 @@
 'use strict';
 
 var constants = require('modules/constants.js');
-
-// var Set = require('utils/set.js');
-// var Map = require('utils/map.js');
-
 var PresenterBase = require('modules/presenterBase.js').PresenterBase;
+var StarAnimation = require('modules/starAnimation.js');
 
 var TetrisPresenter = PresenterBase.extend(function(containerElement) {
     PresenterBase.call(this, containerElement, 'gameboard_template');
@@ -24,6 +21,20 @@ var TetrisPresenter = PresenterBase.extend(function(containerElement) {
 TetrisPresenter.prototype.init = function() {
     this._createElements();
     this._createBuffers();
+
+    var blockSize = this._getBlockSize();
+    this._starAnimation = new StarAnimation(
+        this._gameboard, 
+        this._gameboardWidth * blockSize.width, 
+        this._getBlockSize().height);
+
+    this._starAnimation.init();
+};
+
+TetrisPresenter.prototype.destroy = function() {
+    if (this._starAnimation) {
+        this._starAnimation.destroy();
+    }
 };
 
 TetrisPresenter.prototype._createElements = function() {
@@ -157,6 +168,15 @@ TetrisPresenter.prototype.updateNext = function(piece) {
     this._centerNextPiece(piece);
 };
 
+TetrisPresenter.prototype._getBlockSize = function() {
+    var blockElement = this._gameboard.children[0];
+    
+    var blockWidth = blockElement.offsetWidth;
+    var blockHeight = blockElement.offsetHeight;
+
+    return { width: blockWidth, height: blockHeight };
+};
+
 TetrisPresenter.prototype._centerNextPiece = function(nextPiece) {
     var blockElement = this._nextBlock.children[0];
     
@@ -185,14 +205,16 @@ TetrisPresenter.prototype._centerNextPiece = function(nextPiece) {
         Math.round((parentWidth - width)/2) + 'px';
 };
 
-
-
 TetrisPresenter.prototype.setLevel = function(level) {
     this._setElementText('levelDisplay', level.toString());
 };
 
 TetrisPresenter.prototype.setPoints = function(points) {
     this._setElementText('pointsDisplay', points.toString());
+};
+
+TetrisPresenter.prototype.fullRowRemovedAnimation = function(row) {
+    this._starAnimation.start(row);
 };
 
 exports.TetrisPresenter = TetrisPresenter;
