@@ -8,10 +8,8 @@
     background-position: 0 0;
     background-size: contain;
 
-    background-image: url('assets/star_red.png');
-
     @mixin bg($color) {
-        background-image: url('assets/star_#{$color}.png');
+        background-image: url('assets/tetris_stone_#{$color}.png');
     }
 
     &.particle-green { @include bg('green'); }

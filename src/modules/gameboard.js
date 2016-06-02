@@ -114,14 +114,28 @@ Gameboard.prototype._removeRow = function(rowIndex) {
     }
 };
 
+Gameboard.prototype._getColorsInRow = function(row) {
+    var colors = [];
+
+    for (var col = 0; col < WIDTH; col += 1) {
+        var block = this._get(row, col);
+        colors.push(block.color());
+    }
+
+    return colors;
+};
+
 Gameboard.prototype.removeFirstFullRow = function() {
     // returns *number* of removed row e.g. 1st row or null
     // if no rows were removed
  
     for (var row = -HIDDEN_HEIGHT; row < VISIBLE_HEIGHT; row += 1) {
         if (this._isRowFull(row)) {
+            
+            var rowColors = this._getColorsInRow(row);
             this._removeRow(row);
-            return row;
+
+            return { row:row, colors:rowColors };
         }
     }
 

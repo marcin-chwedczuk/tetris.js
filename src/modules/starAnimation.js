@@ -1,14 +1,14 @@
 'use strict';
 
 var Particle = require('modules/particle.js');
-var COLORS = require('modules/colors.js');
 
 module.exports = StarAnimation;
 
-function StarAnimation(gameboard, gameboardWidth, rowHeight) {
+function StarAnimation(gameboard, gameboardWidth, blockSize, columns) {
     this._gameboard = gameboard;
     this._gameboardWidth = gameboardWidth;
-    this._rowHeight = rowHeight;
+    this._blockSize = blockSize;
+    this._gameboardColumns = columns;
 
     this._animatedElements = [];
     this._intervalId = null;
@@ -56,47 +56,28 @@ StarAnimation.prototype._animate = function() {
     }
 };
 
-StarAnimation.prototype.start = function(rowNumber) {
-    var numberOfStars = this._getNumberOfStars();
-    
-    var stars = this._createStarParticles(numberOfStars, rowNumber);
+StarAnimation.prototype.start = function(rowNumber, blockColors) {
+    var stars = this._createStarParticles(rowNumber, blockColors);
     Array.prototype.push.apply(this._animatedElements, stars);
 };
 
-StarAnimation.prototype._getNumberOfStars = function() {
-    return 40;
-};
-
-StarAnimation.prototype._createStarParticles= function(count, row) {
-    var birthArea = this._getBirthArea(row);
-
+StarAnimation.prototype._createStarParticles = function(row, colors) {
     var starsParticles = [];
 
-    for (var i = 0; i < count; i += 1) {
-        var starParticle = this._createStarParticle(birthArea);
+    // create one paritcle per removed block
+    for (var col = 0; col < this._gameboardColumns; col += 1) {
+        var starParticle = this._createStarParticle(row, col, colors[col]);
         starsParticles.push(starParticle);
     }
 
     return starsParticles;
 };
 
-StarAnimation.prototype._getBirthArea = function(row) {
-    var area = {
-        top: (this._rowHeight * row),
-        left: 0,
-
-        width: this._gameboardWidth,
-        height: this._rowHeight
-    };
-
-    return area;
-};
-
 StarAnimation.prototype._getRandomVelocity = function() {
     var dir = (Math.random() > 0.5) ? 1 : -1;
     return {
         left: dir * (10+Math.random()*50),
-        top: -(40+Math.random()*60)
+        top: -(60+Math.random()*60)
     };
 };
 
@@ -110,24 +91,27 @@ StarAnimation.prototype._getRandomRotation = function() {
     return (Math.random() < 0.5) ? rotation : -rotation;
 };
 
-StarAnimation.prototype._createStarParticle = function(birthArea) {
+StarAnimation.prototype._createStarParticle = function(row, col, color) {
     var position = {
-        top: (birthArea.top + Math.random()*birthArea.height),
-        left: (birthArea.left + Math.random()*birthArea.width)
+        top: this._blockSize*row,
+        left: this._blockSize*col
     };
 
     var velocity = this._getRandomVelocity();
+    var bounceBox = { minLeft: 0, maxLeft: this._gameboardWidth };
+
     var rotation = this._getRandomRotation();
     var element = this._createStarParticleElement();
 
     var starParticle = new Particle({
         position: position,
         velocity: velocity,
+        bounceBox: bounceBox,
         rotation: rotation,
         element: element,
-        color: COLORS.getRandom(),
+        color: color,
         timeToLiveSeconds: 4,
-        delayMs: 1000*Math.random()
+        delayMs: 0 // 1000*Math.random()
     });
 
     starParticle.init();

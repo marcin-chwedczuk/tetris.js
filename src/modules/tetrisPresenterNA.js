@@ -26,7 +26,8 @@ TetrisPresenter.prototype.init = function() {
     this._starAnimation = new StarAnimation(
         this._gameboard, 
         this._gameboardWidth * blockSize.width, 
-        this._getBlockSize().height);
+        this._getBlockSize().height,
+        this._gameboardWidth);
 
     this._starAnimation.init();
 };
@@ -213,8 +214,8 @@ TetrisPresenter.prototype.setPoints = function(points) {
     this._setElementText('pointsDisplay', points.toString());
 };
 
-TetrisPresenter.prototype.fullRowRemovedAnimation = function(row) {
-    this._starAnimation.start(row);
+TetrisPresenter.prototype.fullRowRemovedAnimation = function(row, colors) {
+    this._starAnimation.start(row, colors);
 };
 
 exports.TetrisPresenter = TetrisPresenter;

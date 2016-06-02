@@ -205,9 +205,10 @@ Tetris.prototype._tryRemoveFullRow = function() {
     var fullRowRemoved = this._gameboard.removeFirstFullRow();
 
     if (fullRowRemoved !== null) {
-        this._presenter.fullRowRemovedAnimation(fullRowRemoved);
+        this._presenter.fullRowRemovedAnimation(
+            fullRowRemoved.row, fullRowRemoved.colors);
 
-        this._lockFor(2000);
+        this._lockFor(1000);
         return true;
     }
 
@@ -239,7 +240,8 @@ Tetris.prototype.run = function(driver, diffMs) {
             break;
 
         case 'space':
-            this._presenter.fullRowRemovedAnimation(8);
+            this._presenter.fullRowRemovedAnimation(8, ['red', 'red', 'red',
+            'blue', 'blue', 'blue', 'green', 'green']);
             break;
         // TODO: Pause
     }
