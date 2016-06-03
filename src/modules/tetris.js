@@ -196,7 +196,7 @@ Tetris.prototype._tryLockCurrentPiece = function() {
         else {
             this._gameboard.addPiece(this._currentPiece);
             this._nextCurrentPiece();
-            this._lockFor(500);
+            this._lockFor('game', 500);
         }
 
         return true;
