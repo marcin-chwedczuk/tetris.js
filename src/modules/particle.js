@@ -108,7 +108,7 @@ Particle.prototype._shouldBounceFromWall = function() {
 };
 
 Particle.prototype._animate = function(percentage, diffMs) {
-    var speedFactor = 1.8;
+    var speedFactor = 2.5;
     var diffS = speedFactor * diffMs / 1000;
 
     // drop in gravitation field

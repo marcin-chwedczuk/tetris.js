@@ -76,7 +76,7 @@ StarAnimation.prototype._createStarParticles = function(row, colors) {
 StarAnimation.prototype._getRandomVelocity = function() {
     var dir = (Math.random() > 0.5) ? 1 : -1;
     return {
-        left: dir * (10+Math.random()*50),
+        left: dir * (20+Math.random()*50),
         top: -(60+Math.random()*60)
     };
 };

@@ -9,6 +9,7 @@ var TetrisPresenter = PresenterBase.extend(function(containerElement) {
 
     this._gameboard = document.getElementById('gameboard');
     this._nextBlock = document.getElementById('nextBlockDisplay');
+    this._infoScreen = document.getElementById('infoScreen');
 
     this._gameboardWidth = constants.GAMEBOARD_WIDTH;
     this._gameboardHeight = constants.GAMEBOARD_VISIBLE_HEIGHT;
@@ -216,6 +217,18 @@ TetrisPresenter.prototype.setPoints = function(points) {
 
 TetrisPresenter.prototype.fullRowRemovedAnimation = function(row, colors) {
     this._starAnimation.start(row, colors);
+};
+
+TetrisPresenter.prototype.showInfoScreen = function(message) {
+    var span = this._infoScreen.children[0];
+    span.innerHTML = message.replace(/\r?\n/g, '<br>');
+    this._infoScreen.className = 'infoScreen-show';
+};
+
+TetrisPresenter.prototype.hideInfoScreen = function() {
+    if (this._infoScreen.className) {
+        this._infoScreen.className = '';
+    }
 };
 
 exports.TetrisPresenter = TetrisPresenter;
