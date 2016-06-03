@@ -3,14 +3,15 @@
 
 var TetrisPresenter = require('modules/tetrisPresenterNA.js').TetrisPresenter;
 var Gameboard = require('modules/gameboard.js').Gameboard;
-var TetrisTimings = require('modules/tetrisTimings.js');
+var LevelManager = require('modules/levelManager.js');
 var getRandomPiece = require('modules/piecesGenerator.js').getRandomPiece;
 var utils = require('utils/utils.js');
+var TopScoresRepository = require('modules/topScoresRepository.js').TopScoresRepository;
 
 var WITH_GHOST_PIECE = true;
 
 function Tetris(containerElement, driver) {
-    this._timings = new TetrisTimings();
+    this._levelManager = new LevelManager();
     this._presenter = new TetrisPresenter(containerElement);
     this._presenter.init();
 
@@ -45,7 +46,7 @@ Tetris.prototype.getInterval = function() {
 Tetris.prototype._nextCurrentPiece = function() {
     this._currentPiece = this._nextPiece;
     this._nextPiece = getRandomPiece();
-    this._timings.pieceMovedDown();
+    this._levelManager.pieceMovedDown();
     
     this._centerCurrentPiece();
 
@@ -172,11 +173,25 @@ Tetris.prototype._hasHiddenParts = function(piece) {
     return (box.minRow < 0);
 };
 
+Tetris.prototype._gameOver = function() {
+    var points = this._levelManager.points();
+
+    this._gameIsOver = true;
+    this._presenter.showGameOverScreen(points);
+
+    var topScoresRepo = new TopScoresRepository();
+    if (topScoresRepo.canAddScore(points)) {
+        var userName = prompt('Whats your name (for Top Scores)?');
+        if (userName) {
+            topScoresRepo.addTopScore(userName, points);
+        }
+    }
+};
+
 Tetris.prototype._tryLockCurrentPiece = function() {
     if (!this._canTranslatePiece(this._currentPiece, 1, 0)) {
         if (this._hasHiddenParts(this._currentPiece)) {
-            // TODO: Game over
-            console.log('game over!');
+            this._gameOver();
         }
         else {
             this._gameboard.addPiece(this._currentPiece);
@@ -201,9 +216,9 @@ Tetris.prototype._getGhostPiece = function() {
 };
 
 Tetris.prototype._moveCurrentPieceDown = function() {
-    if (this._timings.shouldMovePieceDown()) {
+    if (this._levelManager.shouldMovePieceDown()) {
         this._tryTranslateCurrentPiece(1, 0);
-        this._timings.pieceMovedDown();
+        this._levelManager.pieceMovedDown();
     }
 };
 
@@ -213,6 +228,7 @@ Tetris.prototype._tryRemoveFullRow = function() {
     var fullRowRemoved = this._gameboard.removeFirstFullRow();
 
     if (fullRowRemoved !== null) {
+        this._levelManager.addRowRemovedPoints();
         this._presenter.fullRowRemovedAnimation(
             fullRowRemoved.row, fullRowRemoved.colors);
 
@@ -245,11 +261,17 @@ Tetris.prototype._pauseUnpause = function(keyboardState) {
 };
 
 Tetris.prototype.run = function(driver, diffMs) {
+    if (driver.keyboardState.isEscapePressed()) {
+        driver.setModule('MainMenu');
+        return;
+    }
+    if (this._gameIsOver) { return; }
+
     this._pauseUnpause(driver.keyboardState);
     if (this._pause) { return; }
 
     this._saveCommand(driver.keyboardState);
-    this._timings.updateTime(diffMs);
+    this._levelManager.updateTime(diffMs);
 
     var rowRemoved = this._tryRemoveFullRow();
     if (this._isLocked('game')) { 
@@ -269,10 +291,6 @@ Tetris.prototype.run = function(driver, diffMs) {
         case 'up':
             this._tryRotateCurrentPiece();
             break;
-
-        case 'esc':
-            driver.setModule('MainMenu');
-            break;
     }
 
     if (!rowRemoved && !this._tryLockCurrentPiece()) {
@@ -291,6 +309,8 @@ Tetris.prototype._redraw = function(drawGhost) {
 
     this._presenter.draw(this._currentPiece.getBlocks());
     this._presenter.draw(this._gameboard.getBlocks());
+    this._presenter.setPoints(this._levelManager.points());
+    this._presenter.setLevel(this._levelManager.level());
 
     this._presenter.swapBuffers();
 };

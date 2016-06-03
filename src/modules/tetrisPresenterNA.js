@@ -211,12 +211,29 @@ TetrisPresenter.prototype.setLevel = function(level) {
     this._setElementText('levelDisplay', level.toString());
 };
 
+TetrisPresenter.prototype._formatPoints = function(points) {
+   // number in format: ### ### ###
+    var pointsString = points.toString();
+
+    var formatted = pointsString.
+        replace(/^(\d{0,3})(\d{3})?(\d{3})$/g, '$1 $2 $3').
+        replace('  ', ' ');
+
+    return formatted;
+};
+
 TetrisPresenter.prototype.setPoints = function(points) {
-    this._setElementText('pointsDisplay', points.toString());
+    var formatted = this._formatPoints(points);
+    this._setElementText('pointsDisplay', formatted);
 };
 
 TetrisPresenter.prototype.fullRowRemovedAnimation = function(row, colors) {
     this._starAnimation.start(row, colors);
+};
+
+TetrisPresenter.prototype.showGameOverScreen = function(points) {
+    var message = 'GAME OVER!\n' + this._formatPoints(points) +  ' POINTS';
+    this.showInfoScreen(message);
 };
 
 TetrisPresenter.prototype.showInfoScreen = function(message) {

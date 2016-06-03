@@ -2,6 +2,8 @@
 
 var cookies = require('utils/cookies.js');
 
+var KEEP_MAX_N = 10;
+
 function TopScoresRepository() {
     this._cookieName = 'top-scores';
 }
@@ -25,12 +27,29 @@ TopScoresRepository.prototype.addTopScore = function(user, score) {
         return (l.date - r.date);
     });
 
-    topScores = topScores.slice(0, 10);
+    topScores = topScores.slice(0, KEEP_MAX_N);
     this._saveTopScores(topScores);
 };
 
 TopScoresRepository.prototype._saveTopScores = function(newTopScores) {
     cookies.setCookieValue(this._cookieName, newTopScores);
+};
+
+TopScoresRepository.prototype.canAddScore = function(points) {
+    var topScores = this.getTopScores();
+
+    if (topScores.length < KEEP_MAX_N) {
+        return true;
+    }   
+
+    // list of scores is full
+    var min = Number.MAX_VALUE;
+    
+    topScores.forEach(function(obj) {
+        min = Math.min(min, obj.score);
+    });
+
+    return (min < points);
 };
 
 exports.TopScoresRepository = TopScoresRepository;
