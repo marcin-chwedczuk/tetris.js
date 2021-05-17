@@ -1,5 +1,5 @@
 # tetris.js
-JavaScript clone of popular tetris game
+JavaScript clone of the popular Tetris game.
 
 ### Building
 
