@@ -3,11 +3,9 @@ JavaScript clone of popular tetris game
 
 ### Building
 
-For building this project you will need NodeJS and Gulp.
-
-Check that you have NodeJS 16.x installed on your system 
+NodeJS 16.x and Gulp are required to build this application
 (Gulp is quite slow to add support for newer NodeJS versions, 
-so make sure that you use exactly 16.x):
+so please make sure that you use exactly 16.x):
 ```
 $ node --version
 v16.0.0
@@ -16,7 +14,7 @@ $ npm --version
 7.10.0
 ```
 
-Install Gulp if you don't have it yet:
+Install Gulp if you don't have it installed yet:
 ```
 $ npm install --global gulp-cli
 $ cd tetris.js
@@ -25,21 +23,21 @@ CLI version: 2.3.0
 Local version: 4.0.2
 ```
 
-Build and start the application:
+Build and start the game:
 ```
 $ npm install
 $ gulp clean serve
 ```
 Enjoy! :tada:
 
-To create release build run:
+To create release build (optimized for deployment) run:
 ```
-RELEASE=1 gulp clean build test
+$ RELEASE=1 gulp clean build test
 ```
 
-For debug build (with source map, non minimized JS) just unset `RELEASE` variable:
+For debug build (with source maps, non minimized JS) just unset `RELEASE` variable:
 ```
-RELEASE= gulp clean build test
+$ RELEASE= gulp clean build test
 ```
 
 ### Gameplay
