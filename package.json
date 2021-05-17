@@ -10,7 +10,7 @@
     "better-console": "^1.0.1",
     "browser-sync": "^2.26.14",
     "browserify": "^17.0.0",
-    "commander": "^7.2.0",
+    "chai": "^4.3.4",
     "express": "^4.17.1",
     "gulp": "^4.0.2",
     "gulp-autoprefixer": "^7.0.1",
@@ -26,9 +26,8 @@
     "gulp-sourcemaps": "^3.0.0",
     "gulp-uglify": "^3.0.2",
     "gulp-util": "^3.0.8",
-    "gulp-watch": "^5.0.1",
     "jshint-stylish": "^2.2.1",
-    "path": "^0.12.7",
+    "mocha": "^8.4.0",
     "vinyl-source-stream": "^2.0.0"
   },
   "scripts": {

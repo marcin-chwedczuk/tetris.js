@@ -1,191 +1,201 @@
-(function() {
-    'use strict';
+const gulp = require('gulp');
+const clean = require('gulp-clean');
+const concat = require('gulp-concat');
+const uglify = require('gulp-uglify');
+const gulpUtil = require('gulp-util');
+const rename = require('gulp-rename');
+const filesize = require('gulp-filesize');
+const mocha = require('gulp-mocha');
+const jshint = require('gulp-jshint');
+const betterConsole = require('better-console');
+const source = require('vinyl-source-stream');
+const browserify = require('browserify');
+const sass = require('gulp-dart-sass');
+const sourcemaps = require('gulp-sourcemaps');
+const gulpIf = require('gulp-if');
+const browserSync = require('browser-sync').create();
+const autoprefixer = require('gulp-autoprefixer');
 
-    var gulp = require('gulp');
-    var clean = require('gulp-clean');
-    var concat = require('gulp-concat');
-    var uglify = require('gulp-uglify');
-    var gutil = require('gulp-util');
-    var rename = require('gulp-rename');
-    var filesize = require('gulp-filesize');
-    var watch = require('gulp-watch');
-    var batch = require('gulp-batch');
-    var mocha = require('gulp-mocha');
-    var jshint = require('gulp-jshint');
-    var betterConsole = require('better-console');
-    var source = require('vinyl-source-stream');
-    var browserify = require('browserify');
-    var program = require('commander');
-    var express = require('express');
-    var path = require('path');
-    var sass = require('gulp-dart-sass');
-    var sourcemaps = require('gulp-sourcemaps');
-    var gulpif = require('gulp-if');
-    var browserSync = require('browser-sync').create();
-    var autoprefixer = require('gulp-autoprefixer');
+const PROGRAM_NAME = 'tetris';
 
-    var SOURCE_DIR = 'src';
-    var DEST_DIR = 'dist';
-    var TEST_DIR = 'test';
-    var STYLES_DIR = 'styles';
-    var ASSETS_DIR = 'assets';
-    var TMP_DIR = 'tmp';
+const SOURCE_DIR = 'src';
+const STYLES_DIR = 'styles';
+const ASSETS_DIR = 'assets';
+const TEST_DIR = 'test';
+const TMP_DIR = 'tmp';
+const DEST_DIR = 'dist';
 
-    var PROGRAM_NAME = 'tetris';
+const SOURCE_JS_FILES = SOURCE_DIR + '/**/*.js';
+const SOURCE_STYLE_FILES = STYLES_DIR + '/*.scss';
+const SOURCE_TEMPLATE_FILES = SOURCE_DIR + '/*.html';
+const SOURCE_ASSET_FILES = ASSETS_DIR + '/*';
+const FAVICON_ASSET_FILE = ASSETS_DIR + '/favicon.ico';
 
-    var SOURCE_JS_FILES = SOURCE_DIR + '/**/*.js';
-    var SOURCE_STYLE_FILES = STYLES_DIR + '/*.scss';
-    var SOURCE_TEMPLATE_FILES = SOURCE_DIR + '/*.html';
-    var SOURCE_ASSET_FILES = ASSETS_DIR + '/*';
-    var FAVICON_ASSET_FILE = ASSETS_DIR + '/favicon.ico';
+const TEST_JS_FILES = TEST_DIR + '/*.js';
 
-    var TEST_JS_FILES = TEST_DIR + '/*.js';
+const DEST_JS_FILES = DEST_DIR + '/*.js';
+const DEST_ASSET_DIR = DEST_DIR + '/' + ASSETS_DIR;
 
-    var DEST_JS_FILES = DEST_DIR + '/*.js';
-    var DEST_ASSET_DIR = DEST_DIR + '/' + ASSETS_DIR;
+const IS_RELEASE_BUILD = !!process.env.RELEASE;
 
-    var JSHINT_REPORTER = 'jshint-stylish';
-
-    program.on('--help', function(){
-      console.log('  Tasks:');
-      console.log();
-      console.log('    build       build the game');
-      console.log('    clean       delete generated files');
-      console.log('    serve       launch development server with auto reload');
-      console.log('    watch       watch for file changes and rebuild automatically');
-      console.log();
-    });
-
-    program
-        .usage('<task> [options]')
-        .option('-R, --release', 'strip debug info')
-        .parse(process.argv);
-
-    var release = !!program.release;
-
-    gulp.task('jshint', function() {
+function jshintTask() {
         return gulp.src([SOURCE_JS_FILES, TEST_JS_FILES])
-            .pipe(jshint())
-            .pipe(jshint.reporter(JSHINT_REPORTER))
-            .pipe(jshint.reporter('fail'))
-    });
+                .pipe(jshint({
+                        esversion: 6
+                }))
+                .pipe(jshint.reporter('jshint-stylish'))
+                .pipe(jshint.reporter('fail'));
+}
 
-    gulp.task('browserify', function() {
-        var b = browserify([SOURCE_DIR + '/main.js'], { 
-            debug: !release,
-            standalone: PROGRAM_NAME,
-            paths: ['./src']
+function browserifyTask() {
+        // Browserify provides a module system (think `require()`)
+        const b = browserify([SOURCE_DIR + '/main.js'], {
+                debug: !IS_RELEASE_BUILD,
+                standalone: PROGRAM_NAME,
+                paths: ['./src']
         });
 
         return b.bundle()
-            .pipe(source(PROGRAM_NAME + '.bs.js'))
-            .pipe(gulp.dest(TMP_DIR));
-    });
+                .pipe(source(PROGRAM_NAME + '.bs.js'))
+                .pipe(gulp.dest(TMP_DIR));
+}
 
-    gulp.task('htmlTemplates', function() {
+function htmlTemplatesTask() {
         return gulp.src(SOURCE_TEMPLATE_FILES)
-            .pipe(gulp.dest(DEST_DIR))
-            .on('error', gutil.log);
-    });
+                .pipe(gulp.dest(DEST_DIR))
+                .on('error', gulpUtil.log);
+}
 
-    gulp.task('htmlAssets', function() {
+function htmlAssetsTask() {
         // assets without favicon
-        return gulp.src([SOURCE_ASSET_FILES, '!' + FAVICON_ASSET_FILE])
-            .pipe(gulp.dest(DEST_ASSET_DIR))
-            .on('error', gutil.log);
-    });
+        return gulp
+                .src([SOURCE_ASSET_FILES, '!' + FAVICON_ASSET_FILE])
+                .pipe(gulp.dest(DEST_ASSET_DIR))
+                .on('error', gulpUtil.log);
+}
 
-    gulp.task('favicon', function() {
+function faviconTask() {
         return gulp.src(FAVICON_ASSET_FILE)
-            .pipe(gulp.dest(DEST_DIR))
-            .on('error', gutil.log);
-    });
+                .pipe(gulp.dest(DEST_DIR))
+                .on('error', gulpUtil.log);
+}
 
-    var createSassStylesPipeline = function() {
+function sassStylesTask() {
         return gulp.src(SOURCE_STYLE_FILES)
-            .pipe(gulpif(!release, sourcemaps.init()))
-            .pipe(sass({ 
-                outputStyle: (release ? 'compressed' : 'expanded'),
-            }).on('error', sass.logError))
-            .pipe(autoprefixer({
-                //browsers: ['last 2 version'],
-                //cascade: false
-            }))
-            .pipe(concat(PROGRAM_NAME + '.css'))
-            .pipe(gulpif(!release, sourcemaps.write('.')))
-            .pipe(gulp.dest(DEST_DIR));
-    };
+                .pipe(gulpIf(!IS_RELEASE_BUILD, sourcemaps.init()))
+                .pipe(
+                        sass({
+                                outputStyle: (IS_RELEASE_BUILD ? 'compressed' : 'expanded'),
+                        })
+                        .on('error', sass.logError)
+                )
+                .pipe(autoprefixer({
+                        // browsers: ['last 2 version'],
+                        // cascade: false
+                }))
+                .pipe(concat(PROGRAM_NAME + '.css'))
+                .pipe(gulpIf(!IS_RELEASE_BUILD, sourcemaps.write('.')))
+                .pipe(gulp.dest(DEST_DIR));
+}
 
-    gulp.task('sassStyles', function() {
-        return createSassStylesPipeline();
-    });
 
-    gulp.task('browserSync:sassStyles', function() {
-        return createSassStylesPipeline()
-            .pipe(browserSync.stream());
-    });
-
-    gulp.task('build', gulp.series('jshint', 'browserify', 'sassStyles', 'htmlTemplates', 'htmlAssets', 'favicon',
-    function() {
-        gutil.log('BUILDING IN ' + (release ? 'RELEASE' : 'DEBUG') + ' MODE');
-
+function uglifyTask() {
         return gulp.src(TMP_DIR + '/' + PROGRAM_NAME + '.bs.js')
-            .pipe(gulpif(release, uglify()))
-            .pipe(rename(PROGRAM_NAME + '.js'))
-            .pipe(gulp.dest(DEST_DIR))
-            .pipe(filesize())
-            .on('error', gutil.log);
-    }));
+                .pipe(gulpIf(IS_RELEASE_BUILD, uglify()))
+                .pipe(rename(PROGRAM_NAME + '.js'))
+                .pipe(gulp.dest(DEST_DIR))
+                .pipe(filesize())
+                .on('error', gulpUtil.log);
+}
 
-    gulp.task('browserSync:build', gulp.series('build', browserSync.reload));
+function logBuildInfoTask(done) {
+        gulpUtil.log('Build information:')
+        gulpUtil.log('\tConfiguration: ' + (IS_RELEASE_BUILD ? 'RELEASE' : 'DEBUG'));
+        done();
+}
 
-    gulp.task('test', gulp.series('build', function() {
-        return gulp.src(TEST_JS_FILES, { read: false })
-            .pipe(mocha({
-                style: 'bdd',
-                reporter: 'nyan',
-            }));
-    }));
+const buildTask = gulp.series(
+        jshintTask, 
+        browserifyTask, 
+        sassStylesTask, 
+        htmlTemplatesTask, 
+        htmlAssetsTask, 
+        faviconTask, 
+        logBuildInfoTask, 
+        uglifyTask);
 
-    gulp.task('clean', function() {
-        return gulp.src([DEST_DIR+'/*', TMP_DIR+'/*'], { read: false })
-            .pipe(clean())
-            .on('error', gutil.log);
-    });
+function runTestsTask() {
+        return gulp
+                .src(TEST_JS_FILES, { read: false })
+                .pipe(mocha({
+                        style: 'bdd',
+                        reporter: 'nyan',
+                }));
+}
 
-    gulp.task('watch', function() {
-        var filesToWatch = [
-            SOURCE_JS_FILES,
-            TEST_JS_FILES,
-            SOURCE_STYLE_FILES,
-            SOURCE_TEMPLATE_FILES,
-            SOURCE_ASSET_FILES
+const testTask = gulp.series(buildTask, runTestsTask);
+
+function cleanTask() {
+        return gulp.src([DEST_DIR + '/*', TMP_DIR + '/*'], { read: false })
+                .pipe(clean())
+                .on('error', gulpUtil.log);
+}
+
+function clearConsoleTask(done) {
+        betterConsole.clear();
+        done();
+}
+
+function watchTask() {
+        const filesToWatch = [
+                SOURCE_JS_FILES,
+                TEST_JS_FILES,
+                SOURCE_STYLE_FILES,
+                SOURCE_TEMPLATE_FILES,
+                SOURCE_ASSET_FILES
         ];
 
-        watch(filesToWatch, batch(function(events, done) {
-            betterConsole.clear();
-            gulp.start('test', done);
-        }));
-    });
-   
-    gulp.task('default', gulp.series('build', (done) => done()));
+        gulp.watch(filesToWatch, gulp.series(clearConsoleTask, testTask));
+}
 
-    gulp.task('serve', gulp.series('build', function () {
+/* Browser sync integration, I am not a JS pro but this looks
+   more complicated than it should be. */
+function browserSyncReloadTask(done) {
+        browserSync.reload();
+        done();
+}
 
+const browserSyncBuildTask = gulp.series(buildTask, browserSyncReloadTask);
+
+function browserSyncSassStylesTask() {
+        return sassStylesTask()
+                .pipe(browserSync.stream());
+}
+
+function browserSyncTask(done) {
         // Serve files from the root of this project
         browserSync.init({
-            port: 8666,
-            server: {
-                baseDir: './' + DEST_DIR,
-                index: PROGRAM_NAME + '.html',
-            }
+                port: 8666,
+                server: {
+                        baseDir: './' + DEST_DIR,
+                        index: PROGRAM_NAME + '.html',
+                }
         });
 
-        gulp.watch(SOURCE_STYLE_FILES, gulp.series('browserSync:sassStyles'));
-        gulp.watch(SOURCE_JS_FILES, gulp.series('browserSync:build'));
-        gulp.watch(TEST_JS_FILES, gulp.series('test'));
-        gulp.watch(SOURCE_TEMPLATE_FILES, gulp.series('browserSync:build'));
-        gulp.watch(SOURCE_ASSET_FILES, gulp.series('browserSync:build'));
-    }));
+        gulp.watch(SOURCE_STYLE_FILES, browserSyncSassStylesTask);
+        gulp.watch(SOURCE_JS_FILES, browserSyncBuildTask);
+        gulp.watch(TEST_JS_FILES, testTask);
+        gulp.watch(SOURCE_TEMPLATE_FILES, browserSyncBuildTask);
+        gulp.watch(SOURCE_ASSET_FILES, browserSyncBuildTask);
 
-}());
+        done();
+}
+
+const serveTask = gulp.series(buildTask, browserSyncTask);
+
+exports.default = gulp.series(cleanTask, buildTask, runTestsTask);
+exports.build = buildTask;
+exports.test = testTask;
+exports.clean = cleanTask;
+exports.serve = serveTask;
+exports.watch = watchTask;
