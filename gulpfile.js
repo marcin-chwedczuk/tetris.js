@@ -18,7 +18,7 @@
     var program = require('commander');
     var express = require('express');
     var path = require('path');
-    var sass = require('gulp-sass');
+    var sass = require('gulp-dart-sass');
     var sourcemaps = require('gulp-sourcemaps');
     var gulpif = require('gulp-if');
     var browserSync = require('browser-sync').create();
@@ -125,7 +125,7 @@
             .pipe(browserSync.stream());
     });
 
-    gulp.task('build', ['jshint', 'browserify', 'sassStyles', 'htmlTemplates', 'htmlAssets', 'favicon'],
+    gulp.task('build', gulp.series('jshint', 'browserify', 'sassStyles', 'htmlTemplates', 'htmlAssets', 'favicon',
     function() {
         gutil.log('BUILDING IN ' + (release ? 'RELEASE' : 'DEBUG') + ' MODE');
 
@@ -135,17 +135,17 @@
             .pipe(gulp.dest(DEST_DIR))
             .pipe(filesize())
             .on('error', gutil.log);
-    });
+    }));
 
-    gulp.task('browserSync:build', ['build'], browserSync.reload);
+    gulp.task('browserSync:build', gulp.series('build', browserSync.reload));
 
-    gulp.task('test', ['build'], function() {
+    gulp.task('test', gulp.series('build', function() {
         return gulp.src(TEST_JS_FILES, { read: false })
             .pipe(mocha({
                 style: 'bdd',
                 reporter: 'nyan',
             }));
-    });
+    }));
 
     gulp.task('clean', function() {
         return gulp.src([DEST_DIR+'/*', TMP_DIR+'/*'], { read: false })
@@ -168,9 +168,9 @@
         }));
     });
    
-    gulp.task('default', ['build'], function() {});
+    gulp.task('default', gulp.series('build', (done) => done()));
 
-    gulp.task('serve', ['build'], function () {
+    gulp.task('serve', gulp.series('build', function () {
 
         // Serve files from the root of this project
         browserSync.init({
@@ -181,11 +181,11 @@
             }
         });
 
-        gulp.watch(SOURCE_STYLE_FILES, ['browserSync:sassStyles']);
-        gulp.watch(SOURCE_JS_FILES, ['browserSync:build']);
-        gulp.watch(TEST_JS_FILES, ['test']);
-        gulp.watch(SOURCE_TEMPLATE_FILES, ['browserSync:build']);
-        gulp.watch(SOURCE_ASSET_FILES, ['browserSync:build']);
-    });
+        gulp.watch(SOURCE_STYLE_FILES, gulp.series('browserSync:sassStyles'));
+        gulp.watch(SOURCE_JS_FILES, gulp.series('browserSync:build'));
+        gulp.watch(TEST_JS_FILES, gulp.series('test'));
+        gulp.watch(SOURCE_TEMPLATE_FILES, gulp.series('browserSync:build'));
+        gulp.watch(SOURCE_ASSET_FILES, gulp.series('browserSync:build'));
+    }));
 
 }());

@@ -8,3 +8,5 @@ dist/
 # ignore tmp directory
 tmp/
 
+# ignore vscode
+.vscode/
