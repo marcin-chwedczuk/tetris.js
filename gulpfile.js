@@ -37,6 +37,7 @@ const DEST_JS_FILES = DEST_DIR + '/*.js';
 const DEST_ASSET_DIR = DEST_DIR + '/' + ASSETS_DIR;
 
 const IS_RELEASE_BUILD = !!process.env.RELEASE;
+const IS_CI_ENV = !!process.env.CI_BUILD;
 
 function jshintTask() {
         return gulp.src([SOURCE_JS_FILES, TEST_JS_FILES])
@@ -129,7 +130,7 @@ function runTestsTask() {
                 .src(TEST_JS_FILES, { read: false })
                 .pipe(mocha({
                         style: 'bdd',
-                        reporter: 'nyan',
+                        reporter: (IS_CI_ENV ? 'spec' : 'nyan'),
                 }));
 }
 
