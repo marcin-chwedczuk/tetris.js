@@ -14,6 +14,14 @@ $ npm --version
 7.10.0
 ```
 
+It is recommended to install NodeJS via [nvm](https://github.com/nvm-sh/nvm):
+```
+$ nvm install 16.0.0
+$ nvm use 16.0.0
+$ node --version 
+v16.0.0
+```
+
 Install Gulp if you don't have it installed yet:
 ```
 $ npm install --global gulp-cli
