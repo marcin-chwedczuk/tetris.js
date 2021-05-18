@@ -5,7 +5,7 @@ body {
     margin: 0;
     padding: 0;
 
-    background: url('../assets/layout_background.gif') repeat;
+    background: url('assets/layout_background.gif') repeat;
     background-size: 256px 256px;
 
     min-width: 758px;
@@ -14,7 +14,7 @@ body {
 
 @font-face {
     font-family: 'DOS_VGA';
-    src: url('../assets/DOS_VGA.ttf');
+    src: url('assets/DOS_VGA.ttf');
     font-weight: normal;
     font-style: normal;
 }

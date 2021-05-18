@@ -179,7 +179,7 @@ function browserSyncTask(done) {
                 port: 8666,
                 server: {
                         baseDir: './' + DEST_DIR,
-                        index: PROGRAM_NAME + '.html',
+                        index: 'index.html',
                 }
         });
 
