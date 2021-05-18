@@ -21,7 +21,7 @@ jobs:
           node-version: 16
       - run: npm ci
       # Run default target of gulp
-      - name "Gulp 4"
+      - name: "Gulp 4"
         run: gulp
         env:
           CI_BUILD: 1
