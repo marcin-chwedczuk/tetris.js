@@ -1,6 +1,7 @@
 # tetris.js
 
 JavaScript clone of the popular Tetris game.
+You can play it [here](https://marcinchwedczuk.pl/tetris/).
 
 ![Build Status](https://github.com/marcin-chwedczuk/tetris.js/actions/workflows/ci.yml/badge.svg)
 
