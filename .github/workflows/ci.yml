@@ -7,6 +7,9 @@ on:
     branches: ["master"]
     # On which files
     # paths: ["scripts/scripts.js", "styles/styles.scss"]
+  schedule:
+  # Every Tuesday at 1PM UTC
+  - cron: "0 13 * * 2"
 
 jobs:
   build:
